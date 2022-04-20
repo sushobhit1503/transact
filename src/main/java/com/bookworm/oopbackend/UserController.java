@@ -30,6 +30,14 @@ public class UserController {
         return mongoTemplate.findOne(query, User.class);
     }
 
+    @CrossOrigin (origins = "http://localhost:3000")
+    @GetMapping ("/user/{username}")
+    public User getPassword (@PathVariable String username) {
+        Query query = new Query ();
+        query.addCriteria(Criteria.where("username").is(username));
+        return mongoTemplate.findOne(query, User.class);
+    }
+
     @GetMapping ("/user/auth/{username}/{password}")
     public User loginUser (@PathVariable String username, @PathVariable String password) {
         Query query = new Query ();
@@ -39,6 +47,35 @@ public class UserController {
     @CrossOrigin (origins = "http://localhost:3000")
     @PostMapping ("/user/auth")
     public User createUser (@RequestBody User user) {
+        return userRepository.save(user);
+    }
+
+    @CrossOrigin (origins = "http://localhost:3000")
+    @PutMapping ("/user/auth/changeName/{uid}")
+    public User changeName (@PathVariable String uid, @RequestBody String newName) {
+        Query query= new Query ();
+        query.addCriteria(Criteria.where("_id").is(uid));
+        User user = mongoTemplate.findOne(query, User.class);
+        user.setName(newName);
+        return userRepository.save(user);
+    }
+
+    @CrossOrigin (origins = "http://localhost:3000")
+    @PutMapping ("/user/auth/changeAddress/{uid}")
+    public User changeAddress (@PathVariable String uid, @RequestBody String newAddress) {
+        Query query= new Query ();
+        query.addCriteria(Criteria.where("_id").is(uid));
+        User user = mongoTemplate.findOne(query, User.class);
+        user.setAddress(newAddress);
+        return userRepository.save(user);
+    }
+
+    @PutMapping ("/user/auth/changeNumber/{uid}")
+    public User changeNumber (@PathVariable String uid, @RequestBody long newNumber) {
+        Query query= new Query ();
+        query.addCriteria(Criteria.where("_id").is(uid));
+        User user = mongoTemplate.findOne(query, User.class);
+        user.setPhone_number(newNumber);
         return userRepository.save(user);
     }
 
