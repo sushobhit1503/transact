@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -23,11 +23,17 @@ public class UserController {
         return mongoTemplate.findOne(query, User.class);
     }
 
+    @GetMapping ("/user/auth/get-name/{uid}")
+    public User getUserName (@PathVariable String uid) {
+        Query query = new Query ();
+        query.addCriteria(Criteria.where("_id").is(uid));
+        return mongoTemplate.findOne(query, User.class);
+    }
+
     @GetMapping ("/user/auth/{username}/{password}")
     public User loginUser (@PathVariable String username, @PathVariable String password) {
-        Qu
-        ery query = new Query ();
-        query.addCriteria(Criteria.where("uid").is(user_uid));
+        Query query = new Query ();
+        query.addCriteria(Criteria.where("username").is(username).andOperator(Criteria.where("password").is(password)));
         return mongoTemplate.findOne(query, User.class);
     }
     @CrossOrigin (origins = "http://localhost:3000")

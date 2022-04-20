@@ -2,9 +2,11 @@ package com.bookworm.oopbackend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.mongodb.core.query.Query;
+
+import java.util.List;
 
 @RestController
 public class SavedBooksController {
@@ -13,6 +15,15 @@ public class SavedBooksController {
     @Autowired
     protected MongoTemplate mongoTemplate;
 
+    @CrossOrigin (origins = "http://localhost:3000")
+    @GetMapping("/api/saved-books/{uid}")
+    public List <SavedBooks> getAllSavedBooks (@PathVariable String uid) {
+        Query query = new Query ();
+        query.addCriteria (Criteria.where("saved_by").is(uid));
+        return mongoTemplate.find(query, SavedBooks.class);
+    }
+
+    @CrossOrigin (origins = "http://localhost:3000")
     @PostMapping("/api/saved-books")
     public SavedBooks createSavedBooks (@RequestBody SavedBooks savedBooks) {
         return savedBooksRepository.save(savedBooks);
