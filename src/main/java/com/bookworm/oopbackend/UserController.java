@@ -105,4 +105,16 @@ public class UserController {
         user.setWallet(amount);
         return userRepository.save(user);
     }
+
+    @CrossOrigin (origins = "http://localhost:3000")
+    @DeleteMapping ("/api/delete-user/{uid}/{name}")
+    public void deleteUser (@PathVariable String uid, @PathVariable String name) {
+        Query query = new Query();
+        userRepository.deleteById(uid);
+        query.addCriteria(Criteria.where("saved_by").is(uid));
+        mongoTemplate.findAllAndRemove(query, SavedBooks.class);
+        Query query1 = new Query();
+        query1.addCriteria(Criteria.where("posted_student_uid").is(uid));
+        mongoTemplate.findAllAndRemove(query, Book.class);
+    }
 }
