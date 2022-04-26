@@ -28,4 +28,12 @@ public class SavedBooksController {
     public SavedBooks createSavedBooks (@RequestBody SavedBooks savedBooks) {
         return savedBooksRepository.save(savedBooks);
     }
+
+    @CrossOrigin (origins = "http://localhost:3000")
+    @DeleteMapping ("/api/saved-books/{uid}/{user}")
+    public List<SavedBooks> deleteSavedBooks (@PathVariable String uid, @PathVariable String user) {
+        Query query= new Query ();
+        query.addCriteria(Criteria.where("saved_by").is(user).andOperator(Criteria.where("_id").is(uid)));
+        return mongoTemplate.findAllAndRemove(query, SavedBooks.class);
+    }
 }

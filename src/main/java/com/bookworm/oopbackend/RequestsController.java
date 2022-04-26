@@ -32,6 +32,22 @@ public class RequestsController {
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
+    @GetMapping ("/api/all-requests")
+    public List <Requests> Allrequests () {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("pending").is(false));
+        return mongoTemplate.find(query, Requests.class);
+    }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @GetMapping ("/api/all-requests/pending")
+    public List <Requests> pendingRequests () {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("pending").is(true));
+        return mongoTemplate.find(query, Requests.class);
+    }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping ("/api/requests")
     public Requests createRequests (@RequestBody Requests requests) {
         return requestsRepository.save(requests);

@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -44,10 +44,17 @@ public class UserController {
         query.addCriteria(Criteria.where("username").is(username).andOperator(Criteria.where("password").is(password)));
         return mongoTemplate.findOne(query, User.class);
     }
+
     @CrossOrigin (origins = "http://localhost:3000")
     @PostMapping ("/user/auth")
     public User createUser (@RequestBody User user) {
         return userRepository.save(user);
+    }
+
+    @CrossOrigin (origins = "http://localhost:3000")
+    @GetMapping ("/all-user/auth")
+    public List<User> getAllUser () {
+        return userRepository.findAll();
     }
 
     @CrossOrigin (origins = "http://localhost:3000")
@@ -79,4 +86,23 @@ public class UserController {
         return userRepository.save(user);
     }
 
+    @CrossOrigin (origins = "http://localhost:3000")
+    @PutMapping ("/user/auth/change-password/{uid}")
+    public User resetPassword (@PathVariable String uid, @RequestBody String newpassword) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(uid));
+        User user = mongoTemplate.findOne(query, User.class);
+        user.setPassword(newpassword);
+        return userRepository.save(user);
+    }
+
+    @CrossOrigin (origins = "http://localhost:3000")
+    @PutMapping ("/user/auth/add-money/{uid}")
+    public User resetPassword (@PathVariable String uid, @RequestBody int amount) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(uid));
+        User user = mongoTemplate.findOne(query, User.class);
+        user.setWallet(amount);
+        return userRepository.save(user);
+    }
 }
