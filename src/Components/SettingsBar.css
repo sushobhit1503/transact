@@ -1,0 +1,164 @@
+.settings-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.settings-panel {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 2.5rem;
+}
+
+.settings-heading {
+    align-self: center;
+    margin-left: 1rem;
+    color: var(--text-color);
+    font-weight: bolder;
+    font-size: 2rem;
+}
+
+.settings-add-button {
+    width: max-content;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    border-radius: 0.5rem;
+    margin: 0rem 0rem 0.5rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 0px 16px var(--primary-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease-in;
+}
+
+.settings-add-button:hover {
+    background-color: var(--text-color);
+    color: var(--primary-color);
+}
+
+.select-search-container {
+
+    width: 300px;
+    position: relative;
+    color: var(--text-color);
+    box-sizing: border-box;
+}
+
+.select-search-container *,
+.select-search-container *::after,
+.select-search-container *::before {
+    box-sizing: inherit;
+}
+
+.select-search-input {
+    position: relative;
+    z-index: 1;
+    display: block;
+    height: 50px;
+    width: 100%;
+    padding: 0 0 0 16px;
+    background: var(--primary-color);
+    box-shadow: 0px 0px 16px var(--primary-color);
+    border-radius: 0.5rem;
+    color: var(--text-color);
+    outline: none;
+    border: none;
+    font-size: 16px;
+    text-align: left;
+    text-overflow: ellipsis;
+    letter-spacing: 0.01rem;
+}
+
+.select-search-select {
+    background: var(--primary-color);
+    box-shadow: 0 .0625rem .125rem rgba(0, 0, 0, 0.15);
+    overflow: auto;
+    z-index: 10;
+    max-height: 360px;
+    margin-top: -5px;
+}
+
+.select-search-container:not(.select-search-is-multiple) .select-search-select {
+    position: absolute;
+    z-index: 10;
+    top: 58px;
+    right: 0;
+    left: 0;
+    border-radius: 3px;
+    display: none;
+}
+
+.select-search-container:not(.select-search-is-multiple).select-search-has-focus .select-search-select {
+    display: block;
+    z-index: 10;
+}
+
+.select-search-has-focus .select-search-select {
+    border-color: var(--select-search-selected);
+    z-index: 10;
+}
+
+.select-search-options {
+    list-style: none;
+}
+
+.select-search-option,
+.select-search-not-found {
+    height: 42px;
+    width: 100%;
+    z-index: 10;
+    padding: 0 16px;
+    background: var(--select-search-background);
+    border: none;
+    outline: none;
+    font-family: var(--select-search-font);
+    color: var(--select-search-text);
+    font-size: 16px;
+    text-align: left;
+    letter-spacing: 0.01rem;
+    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+}
+
+.select-search-is-selected {
+    font-weight: bold;
+    color: var(--select-search-selected);
+    z-index: 10;
+}
+
+.select-search-group-header {
+    font-size: 12px;
+    text-transform: uppercase;
+    background: var(--select-search-border);
+    color: var(--select-search-subtle-text);
+    letter-spacing: 0.1rem;
+    padding: 10px 16px;
+    z-index: 10;
+}
+
+.select-search-row:not(:first-child) .select-search-group-header {
+    margin-top: 10px;
+    z-index: 10;
+}
+
+.select-search-row:not(:last-child) .select-search-group-header {
+    margin-bottom: 10px;
+    z-index: 10;
+}
+
+.settings-modify-modal {
+    display: flex;
+}
+
+.settings-input-style {
+    margin: 1rem;
+    width: max-content;
+}
+
+.settings-label {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+}

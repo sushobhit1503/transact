@@ -1,0 +1,19 @@
+.transaction-details {
+    width: 700px;
+    background-color: var(--secondary-color);
+    height: 500px;
+    margin: 1rem ;
+    border-radius: 10px;
+    box-shadow: 0px 0px 16px var(--primary-color);
+    padding: 1rem;
+}
+
+.transaction-overview {
+    width: 500px;
+    background-color: var(--secondary-color);
+    height: 500px;
+    margin: 1rem ;
+    border-radius: 10px;
+    box-shadow: 0px 0px 16px var(--primary-color);
+    padding: 1rem;
+}

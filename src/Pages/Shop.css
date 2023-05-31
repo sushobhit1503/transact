@@ -1,0 +1,30 @@
+.shop-overview {
+    width: 600px;
+    background-color: var(--secondary-color);
+    margin: 1rem ;
+    border-radius: 10px;
+    box-shadow: 0px 0px 16px var(--primary-color);
+    padding: 1rem;
+}
+
+.shop-list {
+    width: 932px;
+    height: 500px;
+    background-color: var(--secondary-color);
+    box-shadow: 0px 0px 16px var(--primary-color);
+    padding: 1rem;
+    margin: 1rem ;
+    border-radius: 10px;
+}
+
+.shop-city-list {
+    width: 400px;
+    position: absolute;
+    background-color: var(--secondary-color);
+    height: 732px;
+    margin: 1rem ;
+    margin-left: 1016px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 16px var(--primary-color);
+    padding: 1rem;
+}
