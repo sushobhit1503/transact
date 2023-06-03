@@ -134,11 +134,6 @@ class SettingsBar extends React.Component {
                 window.location.reload()
             }).catch((err) => console.log(err.message))
         }
-        const onModifyChanges = () => {
-            localStorage.setItem("account", this.state.selectedAccount)
-            localStorage.setItem("ledger", this.state.selectedLedger)
-            window.location.reload()
-        }
         const onShopCreate = () => {
             const data = {
                 name: this.state.shopName,
@@ -182,12 +177,6 @@ class SettingsBar extends React.Component {
                         {this.state.activeMenu.toUpperCase()}
                     </div>
                     <div className="settings-panel">
-                        <div onClick={() => this.modifyModal.show()} className="settings-add-button">
-                            <UilPlusSquare />
-                            <div style={{ marginLeft: "1rem", fontSize: "1rem", fontWeight: "bold" }}>
-                                MODIFY
-                            </div>
-                        </div>
                         <div onClick={() => this.transactionModal.show()} className="settings-add-button">
                             <UilFilePlusAlt />
                         </div>
@@ -205,23 +194,6 @@ class SettingsBar extends React.Component {
                         </div>
                     </div>
                 </div>
-                <SkyLight hideOnOverlayClicked ref={ref => this.modifyModal = ref} title="MODIFY SETTINGS">
-                    <div className="settings-modify-modal">
-                        <div className="settings-input-style">
-                            <div className="settings-label">Account:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ selectedAccount: value }) }} search options={this.state.allAccounts} value={this.state.selectedAccount} name="selectedAccount" placeholder="Select Account" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Ledger:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ selectedLedger: value }) }} search options={this.state.allLedgers} value={this.state.selectedLedger} name="selectedLedger" placeholder="Select Ledger" />
-                        </div>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                        <button onClick={onModifyChanges} className="success-button">
-                            MODIFY CHANGES
-                        </button>
-                    </div>
-                </SkyLight>
                 <SkyLight hideOnOverlayClicked ref={ref => this.transactionModal = ref} title="CREATE TRANSACTION">
                     <div className="settings-modify-modal">
                         <div className="settings-input-style">

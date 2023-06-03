@@ -1,0 +1,32 @@
+.payment-heading {
+    font-size: 1.75rem;
+    
+}
+
+.payment-subheading {
+    font-size: 1rem;
+}
+
+.payment-overview-container {
+    display: flex;
+}
+
+.payment-overview-stats {
+    width: 350px;
+    margin: 0rem 1rem 0rem 0rem;
+    padding: 0.5rem;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border-radius: 1rem;
+    text-align: center;
+    font-size: 1.75rem;
+}
+
+.payment-overview-stats-heading {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.payment-overview-empty {
+    color: var(--text-color);
+}

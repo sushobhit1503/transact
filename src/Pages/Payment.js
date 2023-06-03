@@ -3,25 +3,14 @@ import "./Payment.css"
 import SettingsBar from "../Components/SettingsBar";
 import StatCards from "../Components/StatCards";
 import randomColor from "randomcolor";
-import { deletePaymentMethod, getAllPaymentMethods } from "../Backend/paymentCalls";
-import { accountWiseColumn, allPaymentColumn, calculatePaymentOverview, getAccountWisePayment } from "../PaymentUtils";
-import { getEachAccount } from "../Backend/accountCalls";
-import MUIDataTable from "mui-datatables";
-import { ThemeProvider } from '@mui/material/styles';
-import { createTheme } from '@mui/material/styles';
+import { deletePaymentMethod, getAllPaymentMethods, getEachPaymentMethod } from "../Backend/paymentCalls";
+import { accountWiseColumn, calculatePaymentOverview, getAccountWisePayment } from "../PaymentUtils";
+import { getAllAccounts, getEachAccount } from "../Backend/accountCalls";
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Visibility from '@material-ui/icons/Visibility'
 import { getAllTransc } from "../Backend/transactionCalls";
-
-const options = {
-    print: false,
-    download: false,
-    selectableRowsHideCheckboxes: true,
-    responsive: "standard",
-    filterType: "dropdown",
-    viewColumns: false
-}
+import Table from "../Components/Table";
 
 class Payment extends React.Component {
     constructor() {
@@ -30,6 +19,7 @@ class Payment extends React.Component {
             allPayments: [],
             selectedPaymentOverview: {},
             selectedPayment: {},
+            selectedAccount: {},
             accountWise: [],
             color1: ""
         }
@@ -37,58 +27,15 @@ class Payment extends React.Component {
     componentDidMount() {
         getAllPaymentMethods().then(result => {
             this.setState({ allPayments: result })
-            this.setState({ accountWise: getAccountWisePayment(result) }, () => {
-                this.state.accountWise.map(eachRecord => {
-                    getEachAccount(eachRecord.account).then(accountName => {
-                        eachRecord["account"] = `${accountName.bankName} - ${accountName.accountType}`
-                    })
-                })
-
-                const temp = this.state.accountWise
-                this.setState ({accountWise: temp})
-                console.log(this.state.accountWise);
+            getAllAccounts ().then (resultData => {
+                let accountWise = getAccountWisePayment(result, resultData);
+                this.setState ({accountWise})
             })
         })
         this.setState({ color1: randomColor() })
     }
-    getMuiTheme = () =>
-        createTheme({
-            components: {
-                MUIDataTable: {
-                    styleOverrides: {
-                        root: {
-                            backgroundColor: '#red',
-                        },
-                        paper: {
-                            boxShadow: 'none',
-                        },
-                    },
-                },
-                MuiTableCell: {
-                    styleOverrides: {
-                        head: {
-                            backgroundColor: 'var(--primary-color)',
-                            color: "var(--text-color)",
-                            fontWeight: "bold"
-                        },
-                        root: {
-                            backgroundColor: 'var(--secondary-color)',
-                            color: "var(--text-color)",
-                            fontWeight: "bold"
-                        }
-                    },
-                },
-                MUIDataTableSelectCell: {
-                    styleOverrides: {
-                        headerCell: {
-                            backgroundColor: 'blue',
-                        },
-                    },
-                }
-            }
-        });
 
-        
+
     render() {
         const allPaymentColumn = [
             {
@@ -110,7 +57,8 @@ class Payment extends React.Component {
                                 <Visibility />
                             </IconButton>
                         )
-                    }
+                    },
+                    filter: false
                 }
             },
             {
@@ -124,18 +72,25 @@ class Payment extends React.Component {
                                 <DeleteIcon />
                             </IconButton>
                         )
-                    }
+                    },
+                    filter: false
                 }
             }
         ];
 
         const handleDeleteClick = (accountId) => {
-            deletePaymentMethod (accountId).then (() => window.location.reload())
+            deletePaymentMethod(accountId).then(() => window.location.reload())
         }
 
         const handleViewClick = (accountId) => {
-            getAllTransc ().then (result => {
-                this.setState ({selectedPaymentOverview: calculatePaymentOverview (accountId, result)})
+            getEachPaymentMethod(accountId).then(result => {
+                getEachAccount(result.account).then(result1 => {
+                    this.setState({ selectedAccount: result1 })
+                })
+                this.setState({ selectedPayment: result })
+            })
+            getAllTransc().then(result => {
+                this.setState({ selectedPaymentOverview: calculatePaymentOverview(accountId, result) })
             })
         }
 
@@ -145,30 +100,37 @@ class Payment extends React.Component {
                 <div className="stat-card-panel">
                     <StatCards backgroundColor={this.state.color1} text="TOTAL PAYMENT METHODS" amount={this.state.allPayments.length} />
                     <div className="shop-overview">
-                        <div className="card-title"> Payment Overview </div>
-                        Show name and the number of transaction and amount of transaction done and the account to which it is linked
-                        Rs. {this.state.selectedPaymentOverview.sum} Rs. {this.state.selectedPaymentOverview.count}
+                        <div style={{ alignItems: "flex-start" }} className="card-title"> Payment Overview
+                            <div className="payment-heading">
+                                {this.state.selectedPayment.paymentMethodName}
+                                {this.state.selectedAccount.bankName &&
+                                    <div className="payment-subheading">
+                                        {this.state.selectedAccount.bankName} ( {this.state.selectedAccount.accountType} )
+                                    </div>}
+                            </div>
+                        </div>
+                        <div className="payment-overview-container">
+                            {!this.state.selectedAccount.bankName && 
+                            <div className="payment-overview-empty">
+                                Please select any payment method to view its overview
+                            </div>}
+                            {this.state.selectedAccount.bankName && <div className="payment-overview-stats">
+                                Rs. {this.state.selectedPaymentOverview.sum}
+                                <div className="payment-overview-stats-heading">TOTAL TRANSC. AMOUNT</div>
+                            </div>}
+                            {this.state.selectedAccount.bankName && <div className="payment-overview-stats">
+                                {this.state.selectedPaymentOverview.count}
+                                <div className="payment-overview-stats-heading">TOTAL TRANSACTIONS</div>
+                            </div>}
+                        </div>
                     </div>
                     <div className="shop-city-list">
                         <div className="card-title"> Account-wise Payment Methods </div>
-                        <ThemeProvider theme={this.getMuiTheme()}>
-                            <MUIDataTable
-                                data={this.state.accountWise}
-                                columns={accountWiseColumn}
-                                options={options}
-                            />
-                        </ThemeProvider>
+                        <Table columns={accountWiseColumn} data={this.state.accountWise} title="" />
                     </div>
                 </div>
                 <div className="shop-list">
-                    <ThemeProvider theme={this.getMuiTheme()}>
-                        <MUIDataTable
-                            data={this.state.allPayments}
-                            columns={allPaymentColumn}
-                            options={options}
-                            title="All Registered Payment Methods"
-                        />
-                    </ThemeProvider>
+                    <Table columns={allPaymentColumn} data={this.state.allPayments} title="All Registered Payment Methods" />
                 </div>
             </div>
         )

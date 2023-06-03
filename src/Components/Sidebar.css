@@ -3,7 +3,7 @@
     padding-right: 1rem;
     height: 98vh;
     width: 15%;
-    position: absolute;
+    position: fixed;
     background-color: var(--primary-color);
     box-shadow: inset;
 }

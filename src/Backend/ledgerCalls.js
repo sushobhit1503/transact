@@ -16,6 +16,11 @@ export const getAllLedgers = async () => {
     return result.data
 }
 
+export const getLedgersByAccount = async (accountId) => {
+    const result = await axios.get (`${baseUrl}/ledger/account/${accountId}`)
+    return result.data
+}
+
 export const activateLedger = async (ledger_id) => {
     const result = await axios.put (`${baseUrl}/ledger/activate/${ledger_id}`)
     return result.data

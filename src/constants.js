@@ -22,3 +22,9 @@ export const categoryOptions = [
     {name: "Miscellaneous", value: "Miscellaneous"},
     {name: "Subscriptions", value: "Subscriptions"}
 ]
+
+export const ledgerHistoryOptions = [
+    {name: "Payment Method", value: "Payment Method"},
+    {name: "Categories", value: "Category"},
+    {name: "Calendar", value: "Calendar"}
+]

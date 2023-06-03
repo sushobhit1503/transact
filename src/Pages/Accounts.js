@@ -5,31 +5,155 @@ import StatCards from "../Components/StatCards";
 import randomColor from "randomcolor";
 import axios from "axios";
 import { baseUrl } from "../index";
-import { calculateCurrentAccounts, calculateSavingAccounts, calculateTotalBanks } from "../AccountUtils";
+import { calculateCurrentAccounts, calculateSavingAccounts, calculateTotalBanks, calculateAccountOverview, calculateAccountLedgers, calculateLedgerAccountOverview } from "../AccountUtils";
+import Table from "../Components/Table";
+import IconButton from '@material-ui/core/IconButton';
+import Visibility from '@material-ui/icons/Visibility'
+import { getAllTransc, getTranscByAccount } from "../Backend/transactionCalls";
+import { getEachAccount } from "../Backend/accountCalls";
+import { getAllLedgers, getLedgersByAccount } from "../Backend/ledgerCalls";
 
 class Accounts extends React.Component {
-    constructor () {
-        super ()
+    constructor() {
+        super()
         this.state = {
             totalCurrent: 0,
             totalSaving: 0,
             totalBanks: 0,
+            allAccounts: [],
+            selectedAccount: {},
+            selectedLedger: [],
+            selectedAccountOverview: {},
             color1: "",
             color2: "",
             color3: "",
-            color4: ""
+            color4: "",
+            history: "Payment Method"
         }
     }
-    componentDidMount () {
+    componentDidMount() {
         axios.get(`${baseUrl}/account/all`).then(result => {
-            const totalCurrent = calculateCurrentAccounts (result.data)
-            const totalSaving = calculateSavingAccounts (result.data)
-            const totalBanks = calculateTotalBanks (result.data)
-            this.setState ({totalBanks, totalCurrent, totalSaving})
+            const totalCurrent = calculateCurrentAccounts(result.data)
+            const totalSaving = calculateSavingAccounts(result.data)
+            const totalBanks = calculateTotalBanks(result.data)
+            getAllTransc().then(allTransc => {
+                const allAccounts = calculateAccountOverview(result.data, allTransc)
+                this.setState({ totalBanks, totalCurrent, totalSaving, allAccounts })
+            })
         })
-        this.setState ({color1: randomColor(), color2: randomColor (), color3: randomColor(), color4: randomColor()})
+        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor() })
     }
     render() {
+        const allAccountColumn = [
+            {
+                name: "bankName",
+                label: "Name",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "accountType",
+                label: "Type",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "balance",
+                label: "Balance",
+                options: {
+                    filter: true,
+                    sort: true,
+                },
+            },
+            {
+                name: "debit",
+                label: "Debit",
+                options: {
+                    filter: true,
+                    sort: true,
+                },
+            },
+            {
+                name: "credit",
+                label: "Credit",
+                options: {
+                    filter: true,
+                    sort: true,
+                },
+            },
+            {
+                name: "uid",
+                label: "View",
+                options: {
+                    customBodyRender: (value, tableMeta, updateValue) => {
+                        const itemId = tableMeta.rowData[5]
+                        return (
+                            <IconButton onClick={() => handleViewClick(itemId)}>
+                                <Visibility />
+                            </IconButton>
+                        )
+                    },
+                    filter: false
+                }
+            }
+        ];
+
+        const allLedgerColumn = [
+            {
+                name: "name",
+                label: "Name",
+                options: {
+                    filter: true,
+                    sort: true
+                }
+            },
+            {
+                name: "balance",
+                label: "Balance",
+                options: {
+                    filter: true,
+                    sort: true,
+                },
+            },
+            {
+                name: "debit",
+                label: "Debit",
+                options: {
+                    filter: true,
+                    sort: true,
+                },
+            },
+            {
+                name: "credit",
+                label: "Credit",
+                options: {
+                    filter: true,
+                    sort: true,
+                },
+            }
+        ];
+
+        const handleViewClick = (accountId) => {
+            getEachAccount(accountId).then(selectedAccount => {
+                this.setState({ selectedAccount })
+            })
+            getAllLedgers().then(ledgers => {
+                getTranscByAccount(accountId).then(result => {
+                    const selectedLedger = calculateAccountLedgers(result, ledgers, accountId)
+                    this.setState({ selectedLedger })
+                })
+            })
+            getLedgersByAccount(accountId).then(result => {
+                const selectedAccountOverview = calculateLedgerAccountOverview(result)
+                console.log(selectedAccountOverview);
+                this.setState({ selectedAccountOverview }, () => console.log(this.state.selectedAccountOverview))
+            })
+        }
+
         return (
             <div style={{ marginLeft: "20%" }}>
                 <SettingsBar />
@@ -41,13 +165,39 @@ class Accounts extends React.Component {
                 </div>
                 <div className="graph-panel">
                     <div className="account-overview">
-                        <div className="card-title"> Account Overview </div>
-                        Show the overall balance, deducted, earned here for the account in overall along with individual ledger balance
-
+                        <Table columns={allAccountColumn} data={this.state.allAccounts} title="All Accounts" />
                     </div>
+                    <div className="account-overview">
+                        <div className="card-title"> Account Overview
+                            <div className="payment-subheading">
+                                <div>
+                                    {this.state.selectedAccount?.bankName} - {this.state.selectedAccount.accountType}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="account-overview-container">
+                            {!this.state.selectedLedger[0] &&
+                                <div className="payment-overview-empty">
+                                    Please select any account to view its overview
+                                </div>}
+                            {this.state.selectedLedger[0] && <div className="payment-overview-stats">
+                                {this.state.selectedAccountOverview.total}
+                                <div className="payment-overview-stats-heading">TOTAL LEDGERS</div>
+                            </div>}
+                            {this.state.selectedLedger[0] && <div className="payment-overview-stats">
+                                {this.state.selectedAccountOverview.totalActive}
+                                <div className="payment-overview-stats-heading">ACTIVE</div>
+                            </div>}
+                            {this.state.selectedLedger[0] && <div className="payment-overview-stats">
+                                {this.state.selectedAccountOverview.totalDeactive}
+                                <div className="payment-overview-stats-heading">DE-ACTIVE</div>
+                            </div>}
+                        </div>
+                        {this.state.selectedLedger[0] && <Table columns={allLedgerColumn} data={this.state.selectedLedger} title="All Ledgers" />}
+                    </div>
+                </div>
+                <div className="graph-panel">
                     <div className="account-details">
-                        <div className="card-title"> Account History </div>
-                        Provide a toggle button with three options of payment method, category and calendar view to show the net earnings and spent in those times
                     </div>
                 </div>
             </div>

@@ -11,6 +11,11 @@ export const getAllShops = async () => {
     return result.data
 }
 
+export const getEachShop = async (shopUid) => {
+    const result = await axios.get (`${baseUrl}/shop/${shopUid}`)
+    return result.data
+}
+
 export const deleteShop = async (shop_id) => {
     const result = await axios.delete (`${baseUrl}/shop/${shop_id}`)
     return result.status
