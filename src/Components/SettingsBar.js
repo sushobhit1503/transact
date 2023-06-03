@@ -42,6 +42,7 @@ class SettingsBar extends React.Component {
             paymentMethod: "",
             category: "",
             credit: false,
+            isCredit: false,
             creditPerson: "",
             lent: false
         }
@@ -146,7 +147,8 @@ class SettingsBar extends React.Component {
         const onPaymentCreate = () => {
             const data = {
                 paymentMethodName: this.state.paymentName,
-                account: this.state.selectedAccount
+                account: this.state.selectedAccount,
+                isCredit: this.state.isCredit
             }
             axios.post(`${baseUrl}/payment`, data).then(() => {
                 window.location.reload()
@@ -280,6 +282,10 @@ class SettingsBar extends React.Component {
                         <div className="settings-input-style">
                             <div className="settings-label">Account:</div>
                             <SelectSearch onChange={(value) => { this.setState({ selectedAccount: value }) }} search options={this.state.allAccounts} value={this.state.selectedAccount} name="selectedAccount" placeholder="Select Account" />
+                        </div>
+                        <div className="settings-input-style">
+                            <div className="settings-label">Credit Card?</div>
+                            <Switch onChange={(value) => this.setState({ isCredit: value })} checked={this.state.isCredit} />
                         </div>
                     </div>
                     <div style={{ display: "flex", justifyContent: "center" }}>
