@@ -103,8 +103,8 @@ export const calculateCalendarLedger = (transc) => {
 
 export const calculateCategoryLedger = (transc) => {
     const result = transc.reduce ((acc, obj) => {
-        const {amount, category} = obj
-        if (acc[category]) {
+        const {amount, category, credit} = obj
+        if (acc[category] && !credit) {
             acc[category] += amount
         }
         else
@@ -115,15 +115,7 @@ export const calculateCategoryLedger = (transc) => {
         name: category,
         sum: result[category]
     }))
-    const finalcategoryData = {
-        labels: categoryData.map(each => each.name),
-        dataset: [
-            {
-                label: "Category-Wise Expense",
-                data: categoryData.map(each => each.sum),
-                backgroundColor: categoryData.map (() => randomColor())
-            }
-        ]
-    }
-    return finalcategoryData
+    return categoryData
 }
+
+

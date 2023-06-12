@@ -189,6 +189,14 @@ class Transactions extends React.Component {
                 }
             },
             {
+                name: "date",
+                label: "Date",
+                options: {
+                    filter: true,
+                    sort: true,
+                }
+            },
+            {
                 name: "amount",
                 label: "Amount",
                 options: {

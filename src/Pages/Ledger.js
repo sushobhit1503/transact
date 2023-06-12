@@ -6,19 +6,17 @@ import { baseUrl } from "../index";
 import axios from "axios";
 import StatCards from "../Components/StatCards";
 import { calculateActiveLedgers, calculateAllLedgers, calculateCalendarLedger, calculateCategoryLedger, calculateNegativeLedgers, calculateNonActiveLedgers, calculatePaymentMethodsLedger, } from "../LedgerUtils";
-import SelectSearch from "react-select-search";
-import { ledgerHistoryOptions } from "../constants";
 import IconButton from '@material-ui/core/IconButton';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import Cancel from "@material-ui/icons/Cancel"
 import Visibility from '@material-ui/icons/Visibility'
 import Table from "../Components/Table";
-import { getEachLedger } from "../Backend/ledgerCalls";
+import { getEachLedger, deActivateLedger, activateLedger } from "../Backend/ledgerCalls";
 import { getEachAccount } from "../Backend/accountCalls";
 import { getAllTransc, getTranscByLedger } from "../Backend/transactionCalls";
 import { getAllPaymentMethods } from "../Backend/paymentCalls";
-import PieChart from "../Components/PieChart";
-import { deActivateLedger, activateLedger } from "../Backend/ledgerCalls";
+import { BarChart, Bar } from "recharts";
+
 
 class Ledger extends React.Component {
     constructor() {
@@ -36,8 +34,7 @@ class Ledger extends React.Component {
             color1: "",
             color2: "",
             color3: "",
-            color4: "",
-            history: ""
+            color4: ""
         }
     }
     componentDidMount() {
@@ -140,6 +137,14 @@ class Ledger extends React.Component {
                 }
             }
         ];
+        const options = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            },
+        };
         const handleStatusClick = (accountId, status) => {
             if (status) {
                 deActivateLedger(accountId).then(() => window.location.reload())
@@ -147,6 +152,51 @@ class Ledger extends React.Component {
             else
                 activateLedger(accountId).then(() => window.location.reload())
         }
+
+        const data = [
+            {
+                name: "Page A",
+                uv: 4000,
+                pv: 2400,
+                amt: 2400
+            },
+            {
+                name: "Page B",
+                uv: 3000,
+                pv: 1398,
+                amt: 2210
+            },
+            {
+                name: "Page C",
+                uv: 2000,
+                pv: 9800,
+                amt: 2290
+            },
+            {
+                name: "Page D",
+                uv: 2780,
+                pv: 3908,
+                amt: 2000
+            },
+            {
+                name: "Page E",
+                uv: 1890,
+                pv: 4800,
+                amt: 2181
+            },
+            {
+                name: "Page F",
+                uv: 2390,
+                pv: 3800,
+                amt: 2500
+            },
+            {
+                name: "Page G",
+                uv: 3490,
+                pv: 4300,
+                amt: 2100
+            }
+        ];
 
         const handleViewClick = (accountId) => {
 
@@ -162,10 +212,12 @@ class Ledger extends React.Component {
                     const paymentData = calculatePaymentMethodsLedger(result, data)
                     const categoryData = calculateCategoryLedger(result)
                     const calendarData = calculateCalendarLedger(result)
-                    this.setState({ paymentData, calendarData, categoryData })
+                    console.log(categoryData);
+                    this.setState({ paymentData, calendarData, categoryData }, () => console.log(this.state.categoryData))
                 })
             })
         }
+
 
         const onChange = (value) => {
             this.setState({ history: value })
@@ -186,10 +238,10 @@ class Ledger extends React.Component {
                     <div>
                         <div className="ledger-overview">
                             <div className="card-title"> Ledger Overview</div>
-                            {!this.state.selectedLedger.name && 
-                            <div className="payment-overview-empty">
-                                Please select any ledger to view its overview
-                            </div>}
+                            {!this.state.selectedLedger.name &&
+                                <div className="payment-overview-empty">
+                                    Please select any ledger to view its overview
+                                </div>}
                             <div className="ledger-heading">
                                 <div>
                                     {this.state.selectedLedger?.name}
@@ -207,12 +259,26 @@ class Ledger extends React.Component {
                             </div>}
                         </div>
                         <div className="ledger-details">
-                            <div className="card-title"> Ledger History
-                                <SelectSearch onChange={onChange} search options={ledgerHistoryOptions} value={this.state.history} name="history" placeholder="Select Options" />
+                            <div className="card-title"> Ledger Categories
                             </div>
-                            <div>
-                            {this.state.history && <PieChart data={this.state.paymentData} />}
-                            </div>
+                            {this.state.categoryData.length > 0 &&
+                                <div>
+                                    Hello
+                                    {console.log(this.state.categoryData)}
+                                    <BarChart width={150} height={40} data={this.state.categoryData}>
+                                        <Bar dataKey="uv" fill="#8884d8" />
+                                    </BarChart>
+                                </div>}
+                        </div>
+                    </div>
+                </div>
+                <div className="graph-panel">
+                    <div className="ledger-history">
+                        <div className="card-title"> Ledger Payment
+                        </div>
+                    </div>
+                    <div className="ledger-history">
+                        <div className="card-title"> Ledger Calendar
                         </div>
                     </div>
                 </div>

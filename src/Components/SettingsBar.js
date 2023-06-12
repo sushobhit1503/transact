@@ -120,9 +120,9 @@ class SettingsBar extends React.Component {
                 bankName: this.state.bankName,
                 accountType: this.state.accountType
             }
-            const success = createNewAccount(data)
-            if (success === 200)
+            createNewAccount(data).then (() => {
                 window.location.reload()
+            })
         }
         const onLedgerCreate = () => {
             const data = {

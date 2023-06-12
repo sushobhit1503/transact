@@ -7,7 +7,6 @@ import { baseUrl } from "../index";
 import axios from "axios";
 import { calculateCreditCardInfo, calculateOverallExpense, calculateOverallRevenue, calculateOverallLent, calculateOverallCategoryShare, calculateOverallPaymentShare  } from "../DashboardUtils";
 import randomColor from "randomcolor";
-import PieChart from "../Components/PieChart";
 import { getPaymentByCredit } from "../Backend/paymentCalls";
 
 class Dashboard extends React.Component {
