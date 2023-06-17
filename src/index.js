@@ -13,4 +13,7 @@ root.render(
   </React.StrictMode>
 );
 
-export const baseUrl = `http://localhost:8000`
+export const baseUrlDev = `http://localhost:8000`
+export const baseUrlProd = `https://transact-personal.azurewebsites.net`
+
+export const baseUrl = process.env.NODE_ENV === 'development' ? baseUrlDev : baseUrlProd
