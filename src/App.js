@@ -14,6 +14,7 @@ class App extends React.Component {
     return (
       <div>
         <Sidebar />
+        {console.log(process.env.NODE_ENV)}
         <Routes>
           <Route path="/" exact element={<Dashboard />} />
           <Route path="/transaction" exact element={<Transactions />} />
