@@ -17,13 +17,13 @@ public class ShopController {
     @Autowired
     protected MongoTemplate mongoTemplate;
 
-    @CrossOrigin(origins = {"http://localhost:3000"})
+    @CrossOrigin
     @GetMapping ("/shops")
     public List <Shop> getAllShops () {
         return shopsRepository.findAll();
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin 
     @GetMapping("/shop/{shop_uid}")
     public Shop getEachShop (@PathVariable String shop_uid) {
         Query query = new Query ();
@@ -31,7 +31,7 @@ public class ShopController {
         return mongoTemplate.findOne(query, Shop.class);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin 
     @DeleteMapping("/shop/{shop_uid}")
     public Shop deleteShop (@PathVariable String shop_uid) {
         Query query = new Query();
@@ -39,7 +39,7 @@ public class ShopController {
         return mongoTemplate.findAndRemove(query, Shop.class);
     }
 
-    @CrossOrigin(origins = {"http://localhost:3000"})
+    @CrossOrigin
     @PostMapping ("/shops")
     public Shop createShop (@RequestBody Shop shops) {
         return shopsRepository.save(shops);

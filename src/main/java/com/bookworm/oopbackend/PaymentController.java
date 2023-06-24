@@ -16,19 +16,19 @@ public class PaymentController {
     @Autowired
     protected MongoTemplate mongoTemplate;
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @GetMapping ("/payment")
     public List <Payment> getPaymentMethods () {
         return paymentRepository.findAll();
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @PostMapping("/payment")
     public Payment createPaymentMethod (@RequestBody Payment payment) {
         return paymentRepository.save(payment);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @GetMapping("/payment/{payment_uid}")
     public Payment getEachPaymentMethod (@PathVariable String payment_uid) {
         Query query = new Query ();
@@ -36,7 +36,7 @@ public class PaymentController {
         return mongoTemplate.findOne(query, Payment.class);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @GetMapping("/payment/credit")
     public List<Payment> getPaymentByCredit () {
         Query query = new Query ();
@@ -44,7 +44,7 @@ public class PaymentController {
         return mongoTemplate.find(query, Payment.class);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @DeleteMapping ("/payment/{payment_uid}")
     public void deletePayment (@PathVariable String payment_uid) {
         paymentRepository.deleteById(payment_uid);

@@ -17,19 +17,19 @@ public class LedgerController {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @GetMapping ("/ledger/all")
     public List<Ledger> getAllLedgers () {
         return ledgerRepository.findAll();
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @PostMapping ("/ledger")
     public Ledger createLedger (@RequestBody Ledger ledger) {
         return ledgerRepository.save(ledger);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @GetMapping ("/ledger/{uid}")
     public Ledger getLedgerDetails (@PathVariable String uid) {
         Query query = new Query ();
@@ -37,7 +37,7 @@ public class LedgerController {
         return mongoTemplate.findOne(query, Ledger.class);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @GetMapping ("/ledger/account/{uid}")
     public List<Ledger> getLedgerByAccount (@PathVariable String uid) {
         Query query = new Query ();
@@ -45,7 +45,7 @@ public class LedgerController {
         return mongoTemplate.find(query, Ledger.class);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @PutMapping("/ledger/activate/{uid}")
     public Ledger activateLedger (@PathVariable String uid) {
         Query query = new Query();
@@ -55,7 +55,7 @@ public class LedgerController {
         return ledgerRepository.save(ledger);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin
     @PutMapping("/ledger/deactivate/{uid}")
     public Ledger changeLedgerActivity (@PathVariable String uid) {
         Query query = new Query();

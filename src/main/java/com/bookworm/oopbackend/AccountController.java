@@ -15,7 +15,7 @@ public class AccountController {
     @Autowired
     protected MongoTemplate mongoTemplate;
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @GetMapping ("/account/{account_uid}")
     public Account getAccount (@PathVariable String account_uid) {
         Query query = new Query();
@@ -23,19 +23,19 @@ public class AccountController {
         return mongoTemplate.findOne(query,  Account.class);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin 
     @PostMapping ("/account")
     public Account createAccount (@RequestBody Account account) {
         return accountRepository.save(account);
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin 
     @GetMapping ("/account/all")
     public List<Account> getAllAccounts () {
         return accountRepository.findAll();
     }
 
-    @CrossOrigin (origins = "http://localhost:3000")
+    @CrossOrigin 
     @DeleteMapping ("/account/{account_uid}")
     public void deleteAccount (@PathVariable String account_uid) {
         accountRepository.deleteById(account_uid);
