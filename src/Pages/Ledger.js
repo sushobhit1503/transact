@@ -31,6 +31,7 @@ class Ledger extends React.Component {
             paymentData: [],
             categoryData: [],
             calendarData: [],
+            show: false,
             color1: "",
             color2: "",
             color3: "",
@@ -48,6 +49,14 @@ class Ledger extends React.Component {
             })
         })
         this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor() })
+        getTranscByLedger("647b681972e1812b5d9145c8").then(result => {
+            getAllPaymentMethods().then(data => {
+                const paymentData = calculatePaymentMethodsLedger(result, data)
+                const categoryData = calculateCategoryLedger(result)
+                const calendarData = calculateCalendarLedger(result)
+                this.setState({ paymentData, calendarData, categoryData, show: true }, () => console.log(this.state.categoryData, this.state.show))
+            })
+        })
     }
 
     render() {
@@ -212,8 +221,7 @@ class Ledger extends React.Component {
                     const paymentData = calculatePaymentMethodsLedger(result, data)
                     const categoryData = calculateCategoryLedger(result)
                     const calendarData = calculateCalendarLedger(result)
-                    console.log(categoryData);
-                    this.setState({ paymentData, calendarData, categoryData }, () => console.log(this.state.categoryData))
+                    this.setState({ paymentData, calendarData, categoryData, show: true }, () => console.log(this.state.categoryData, this.state.show))
                 })
             })
         }
@@ -263,11 +271,11 @@ class Ledger extends React.Component {
                             </div>
                             {this.state.categoryData.length > 0 &&
                                 <div>
-                                    Hello
                                     {console.log(this.state.categoryData)}
-                                    <BarChart width={150} height={40} data={this.state.categoryData}>
+                                    <BarChart width={600} height={250} data={data}>
                                         <Bar dataKey="uv" fill="#8884d8" />
                                     </BarChart>
+                                    {console.log(this.state.categoryData)}
                                 </div>}
                         </div>
                     </div>

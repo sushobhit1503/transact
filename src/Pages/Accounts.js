@@ -150,7 +150,7 @@ class Accounts extends React.Component {
             getLedgersByAccount(accountId).then(result => {
                 const selectedAccountOverview = calculateLedgerAccountOverview(result)
                 console.log(selectedAccountOverview);
-                this.setState({ selectedAccountOverview }, () => console.log(this.state.selectedAccountOverview))
+                this.setState({ selectedAccountOverview })
             })
         }
 

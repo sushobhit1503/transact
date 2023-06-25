@@ -10,7 +10,7 @@ export const calculateOverallCreditTransactions = (allTransactions) => {
 export const calculateOverallDebitTransactions = (allTransactions) => {
     var totalDebitTransc = 0
     allTransactions.map (eachTransaction => {
-        if (!eachTransaction.credit)
+        if (!eachTransaction.credit && eachTransaction.category !== "Credit Card Payments")
             totalDebitTransc += 1
     })
     return totalDebitTransc

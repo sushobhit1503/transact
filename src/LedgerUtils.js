@@ -1,4 +1,3 @@
-import randomColor from "randomcolor"
 
 export const calculateActiveLedgers = (allLedgers) => {
     var totalActive = 0
@@ -40,7 +39,7 @@ export const calculateAllLedgers = (allLedgers, allTransc) => {
         const {uid, name, active} = ledger
         const transcObjects = allTransc.filter (transc => transc.ledger === uid)
         const debit = transcObjects.reduce ((acc, transc) => {
-            if (!transc.credit) {
+            if (!transc.credit && transc.category !== "Credit Card Payments") {
                 return acc + transc.amount
             }
             return acc

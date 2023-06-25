@@ -35,7 +35,7 @@ export const calculatePaymentOverview = (paymentId, allTransactions) => {
     let count = 0
     let sum = 0
     allTransactions.forEach (eachTransc => {
-        if (eachTransc.paymentMethod === paymentId) {
+        if (eachTransc.paymentMethod === paymentId && eachTransc.category !== "Credit Card Payments") {
             count ++
             sum += eachTransc.amount
         }

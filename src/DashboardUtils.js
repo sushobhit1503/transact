@@ -4,7 +4,7 @@ import randomColor from "randomcolor"
 export const calculateOverallExpense = (allTransactions) => {
     var totalExpense = 0
     allTransactions.map (eachTransaction => {
-        if (!eachTransaction.credit)
+        if (!eachTransaction.credit && eachTransaction.category !== "Credit Card Payments")
             totalExpense += eachTransaction.amount
     })
     return totalExpense
