@@ -209,7 +209,8 @@ class Transactions extends React.Component {
                 label: "Delete",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
-                        const itemId = tableMeta.rowData[8]
+                        const itemId = tableMeta.rowData[9]
+                        console.log(tableMeta.rowData);
                         return (
                             <div style={{ display: "flex", cursor:"pointer" }}>
                                 <DeleteIcon onClick={() => handleDeleteClick(itemId)} />
@@ -229,7 +230,7 @@ class Transactions extends React.Component {
 
         const handleDeleteClick = (accountId) => {
             deleteTransaction (accountId).then (() => {
-                window.location.reload ()
+                window.location.reload()
             })
         }
 
