@@ -22,7 +22,8 @@ export const categoryOptions = [
     {name: "Miscellaneous", value: "Miscellaneous"},
     {name: "Subscriptions", value: "Subscriptions"},
     {name: "Credit Card Payments", value: "Credit Card Payments"},
-    {name: "Transfer", value: "Transfer"}
+    {name: "Transfer", value: "Transfer"},
+    {name: "Gifts", value: "Gifts"}
 ]
 
 export const ledgerHistoryOptions = [
