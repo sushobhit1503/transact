@@ -39,12 +39,14 @@ class Transactions extends React.Component {
             const totalDebit = calculateOverallDebitTransactions(result.data)
             const totalLent = calculateOverallLentTransactions(result.data)
             getAllShops().then(resultData => {
-                const allLentTransc = calculateLentTransc(result.data, resultData)
-                getAllAccounts().then (allAccounts => {
-                    getAllLedgers().then (allLedgers => {
-                        getAllPaymentMethods().then (allPaymentMethods => {
-                            const allTransc = calculateAllTransc (result.data, resultData, allAccounts, allLedgers, allPaymentMethods)
-                            this.setState({ totalCredit, totalDebit, totalLent, allLentTransc, allTransc })
+                getAllPaymentMethods().then (paymentData => {
+                    const allLentTransc = calculateLentTransc(result.data, resultData, paymentData)
+                    getAllAccounts().then (allAccounts => {
+                        getAllLedgers().then (allLedgers => {
+                            getAllPaymentMethods().then (allPaymentMethods => {
+                                const allTransc = calculateAllTransc (result.data, resultData, allAccounts, allLedgers, allPaymentMethods)
+                                this.setState({ totalCredit, totalDebit, totalLent, allLentTransc, allTransc })
+                            })
                         })
                     })
                 })
@@ -73,6 +75,14 @@ class Transactions extends React.Component {
             {
                 name: "creditPerson",
                 label: "Person",
+                options: {
+                    filter: true,
+                    sort: true,
+                }
+            },
+            {
+                name: "paymentName",
+                label: "Payment",
                 options: {
                     filter: true,
                     sort: true,
