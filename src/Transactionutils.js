@@ -44,7 +44,7 @@ export const calculateAllTransc = (allTransc, allShops, allAccounts, allLedgers,
         const ledgerName = allLedgers.find (eachledger => eachledger.uid === ledger).name
         const accountObject = allAccounts.find (eachAccount => eachAccount.uid === account)
         const accountName = `${accountObject.bankName} - ${accountObject.accountType}`
-        const paymentName = allPayment.find (eachPayment => eachPayment.uid === paymentMethod).paymentMethodName
+        const paymentName = allPayment.find (eachPayment => eachPayment.uid === paymentMethod)?.paymentMethodName
 
         return {uid, itemName, shop, ledgerName, accountName, paymentName, category, credit, amount, date }
     })
