@@ -39,12 +39,12 @@ class Transactions extends React.Component {
             const totalDebit = calculateOverallDebitTransactions(result.data)
             const totalLent = calculateOverallLentTransactions(result.data)
             getAllShops().then(resultData => {
-                getAllPaymentMethods().then (paymentData => {
+                getAllPaymentMethods().then(paymentData => {
                     const allLentTransc = calculateLentTransc(result.data, resultData, paymentData)
-                    getAllAccounts().then (allAccounts => {
-                        getAllLedgers().then (allLedgers => {
-                            getAllPaymentMethods().then (allPaymentMethods => {
-                                const allTransc = calculateAllTransc (result.data, resultData, allAccounts, allLedgers, allPaymentMethods)
+                    getAllAccounts().then(allAccounts => {
+                        getAllLedgers().then(allLedgers => {
+                            getAllPaymentMethods().then(allPaymentMethods => {
+                                const allTransc = calculateAllTransc(result.data, resultData, allAccounts, allLedgers, allPaymentMethods)
                                 this.setState({ totalCredit, totalDebit, totalLent, allLentTransc, allTransc })
                             })
                         })
@@ -117,7 +117,7 @@ class Transactions extends React.Component {
                     customBodyRender: (value, tableMeta, updateValue) => {
                         const itemId = tableMeta.rowData[4]
                         return (
-                            <div style={{ display: "flex", cursor:"pointer" }}>
+                            <div style={{ display: "flex", cursor: "pointer" }}>
                                 <CheckCircle onClick={() => handleCheckClick(itemId)} />
                             </div>
                         )
@@ -184,17 +184,17 @@ class Transactions extends React.Component {
                     customBodyRender: (value, tableMeta, updateValue) => {
                         const itemId = tableMeta.rowData[6]
                         if (itemId)
-                        return (
-                            <div style={{ display: "flex", cursor:"pointer" }}>
-                                <Add/>
-                            </div>
-                        )
-                        else 
-                        return (
-                            <div style={{ display: "flex", cursor:"pointer" }}>
-                                <Remove />
-                            </div>
-                        )
+                            return (
+                                <div style={{ display: "flex", cursor: "pointer" }}>
+                                    <Add />
+                                </div>
+                            )
+                        else
+                            return (
+                                <div style={{ display: "flex", cursor: "pointer" }}>
+                                    <Remove />
+                                </div>
+                            )
                     },
                 }
             },
@@ -222,7 +222,7 @@ class Transactions extends React.Component {
                         const itemId = tableMeta.rowData[9]
                         console.log(tableMeta.rowData);
                         return (
-                            <div style={{ display: "flex", cursor:"pointer" }}>
+                            <div style={{ display: "flex", cursor: "pointer" }}>
                                 <DeleteIcon onClick={() => handleDeleteClick(itemId)} />
                             </div>
                         )
@@ -239,7 +239,7 @@ class Transactions extends React.Component {
         }
 
         const handleDeleteClick = (accountId) => {
-            deleteTransaction (accountId).then (() => {
+            deleteTransaction(accountId).then(() => {
                 window.location.reload()
             })
         }
@@ -249,31 +249,35 @@ class Transactions extends React.Component {
         }
 
         return (
-            <div style={{ marginLeft: "20%" }}>
+            <div>
                 <SettingsBar />
-                <div className="stat-card-panel">
+                <div className="row row-cols-1 row-cols-xl-4 row-cols-md-2 g-3">
                     <StatCards backgroundColor={this.state.color1} text="TOTAL TRANSACTIONS" amount={this.state.totalCredit + this.state.totalDebit} />
                     <StatCards backgroundColor={this.state.color2} text="TOTAL DEBIT TRANSACTIONS" amount={this.state.totalDebit - this.state.totalLent} />
                     <StatCards backgroundColor={this.state.color3} text="TOTAL CREDIT TRANSACTIONS" amount={this.state.totalCredit} />
                     <StatCards backgroundColor={this.state.color4} text="TOTAL LENT TRANSACTIONS" amount={this.state.totalLent} />
                 </div>
-                <div className="graph-panel">
+                <div className="m-3">
                     <div className="transaction-details">
                         <Table columns={allTranscLentColumn} data={this.state.allLentTransc} title="Lent Transactions" />
                     </div>
                 </div>
-                <div className="graph-panel">
+                <div className="m-3">
                     <div className="transaction-details">
                         <Table columns={allTranscColumn} data={this.state.allTransc} title="All Transactions" />
                     </div>
                 </div>
-                <div className="graph-panel">
-                    <div className="transaction-overview">
-                        Transaction overview
+                <div className="row row-cols-xl-2 row-cols-1 g-3">
+                    <div className="col">
+                        <div className="graph-card">
+                            <div className="card-title"> Transaction Overview </div>
+                        </div>
                     </div>
-                    <div className="transaction-overview">
-                        <div className="card-title"> Transaction Data Graphs </div>
-                        Show all the account/ledger transactions and provide the delete option only. There will be sort and filter as per the date and the number of transactions
+                    <div className="col">
+                        <div className="graph-card">
+                            <div className="card-title"> Transaction Data Graphs </div>
+                            One controller to select the parameters and a button and then that graph will be displayed
+                        </div>
                     </div>
                 </div>
             </div>

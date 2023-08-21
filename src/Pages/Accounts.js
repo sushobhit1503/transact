@@ -155,49 +155,74 @@ class Accounts extends React.Component {
         }
 
         return (
-            <div style={{ marginLeft: "20%" }}>
+            <div>
                 <SettingsBar />
-                <div className="stat-card-panel">
+                <div className="row row-cols-1 row-cols-xl-4 row-cols-md-2 g-3">
                     <StatCards backgroundColor={this.state.color1} text="TOTAL ACCOUNTS" amount={this.state.totalSaving + this.state.totalCurrent} />
                     <StatCards backgroundColor={this.state.color2} text="TOTAL SAVING ACCOUNTS" amount={this.state.totalSaving} />
                     <StatCards backgroundColor={this.state.color3} text="TOTAL CURRENT ACCOUNTS" amount={this.state.totalCurrent} />
                     <StatCards backgroundColor={this.state.color4} text="TOTAL BANKS" amount={this.state.totalBanks} />
                 </div>
-                <div className="graph-panel">
-                    <div className="account-overview">
-                        <Table columns={allAccountColumn} data={this.state.allAccounts} title="All Accounts" />
+                <div className="row row-cols-1 row-cols-xl-2 g-3">
+                    <div className="col">
+                        <div className="account-overview">
+                            <Table columns={allAccountColumn} data={this.state.allAccounts} title="All Accounts" />
+                        </div>
                     </div>
-                    <div className="account-overview">
-                        <div className="card-title"> Account Overview
-                            <div className="payment-subheading">
-                                <div>
-                                    {this.state.selectedAccount?.bankName} - {this.state.selectedAccount.accountType}
+                    <div className="col">
+                        <div className="account-overview">
+                            <div className="card-title"> Account Overview
+                                <div className="payment-subheading">
+                                    <div>
+                                        {this.state.selectedAccount?.bankName} - {this.state.selectedAccount.accountType}
+                                    </div>
                                 </div>
                             </div>
+                            <div className="row row-cols-3 g-3 mb-3">
+                                <div className="col-12">
+                                    {!this.state.selectedLedger[0] &&
+                                        <div className="payment-overview-empty">
+                                            Please select any account to view its overview
+                                        </div>}
+                                </div>
+                                <div className="col-4">
+                                    {this.state.selectedLedger[0] && <div className="payment-overview-stats">
+                                        {this.state.selectedAccountOverview.total}
+                                        <div className="payment-overview-stats-heading">TOTAL LEDGERS</div>
+                                    </div>}
+                                </div>
+                                <div className="col-4">
+                                    {this.state.selectedLedger[0] && <div className="payment-overview-stats">
+                                        {this.state.selectedAccountOverview.totalActive}
+                                        <div className="payment-overview-stats-heading">ACTIVE</div>
+                                    </div>}
+                                </div>
+                                <div className="col-4">
+                                    {this.state.selectedLedger[0] && <div className="payment-overview-stats">
+                                        {this.state.selectedAccountOverview.totalDeactive}
+                                        <div className="payment-overview-stats-heading">DE-ACTIVE</div>
+                                    </div>}
+                                </div>
+                            </div>
+                            {this.state.selectedLedger[0] && <Table columns={allLedgerColumn} data={this.state.selectedLedger} title="All Ledgers" />}
                         </div>
-                        <div className="account-overview-container">
-                            {!this.state.selectedLedger[0] &&
-                                <div className="payment-overview-empty">
-                                    Please select any account to view its overview
-                                </div>}
-                            {this.state.selectedLedger[0] && <div className="payment-overview-stats">
-                                {this.state.selectedAccountOverview.total}
-                                <div className="payment-overview-stats-heading">TOTAL LEDGERS</div>
-                            </div>}
-                            {this.state.selectedLedger[0] && <div className="payment-overview-stats">
-                                {this.state.selectedAccountOverview.totalActive}
-                                <div className="payment-overview-stats-heading">ACTIVE</div>
-                            </div>}
-                            {this.state.selectedLedger[0] && <div className="payment-overview-stats">
-                                {this.state.selectedAccountOverview.totalDeactive}
-                                <div className="payment-overview-stats-heading">DE-ACTIVE</div>
-                            </div>}
-                        </div>
-                        {this.state.selectedLedger[0] && <Table columns={allLedgerColumn} data={this.state.selectedLedger} title="All Ledgers" />}
                     </div>
                 </div>
-                <div className="graph-panel">
-                    <div className="account-details">
+                <div className="row row-cols-1 row-cols-xl-3 g-3">
+                    <div className="col">
+                        <div className="graph-card">
+                            <div className="card-title"> Calendar Graph </div>
+                        </div>
+                    </div>
+                    <div className="col">
+                        <div className="graph-card">
+                            <div className="card-title"> Payment Graph </div>
+                        </div>
+                    </div>
+                    <div className="col">
+                        <div className="graph-card">
+                            <div className="card-title"> Category Graph </div>
+                        </div>
                     </div>
                 </div>
             </div>

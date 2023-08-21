@@ -231,19 +231,21 @@ class Ledger extends React.Component {
             this.setState({ history: value })
         }
         return (
-            <div style={{ marginLeft: "20%" }}>
+            <div>
                 <SettingsBar />
-                <div className="stat-card-panel">
+                <div className="row row-cols-1 row-cols-md-2 row-cols-xl-4">
                     <StatCards backgroundColor={this.state.color1} text="TOTAL LEDGERS" amount={this.state.totalActive + this.state.totalNonActive} />
                     <StatCards backgroundColor={this.state.color2} text="ACTIVE LEDGERS" amount={this.state.totalActive} />
                     <StatCards backgroundColor={this.state.color3} text="NON ACTIVE LEDGERS" amount={this.state.totalNonActive} />
                     <StatCards backgroundColor={this.state.color4} text="NEGATIVE LEDGERS" amount={this.state.totalNegative} />
                 </div>
-                <div className="graph-panel">
-                    <div className="ledger-history">
-                        <Table columns={allLedgerColumn} data={this.state.allLedgers} title="All Ledgers" />
+                <div className="row row-cols-1 row-cols-xl-2 g-3">
+                    <div className="col">
+                        <div className="account-overview">
+                            <Table columns={allLedgerColumn} data={this.state.allLedgers} title="All Ledgers" />
+                        </div>
                     </div>
-                    <div>
+                    <div className="col">
                         <div className="ledger-overview">
                             <div className="card-title"> Ledger Overview</div>
                             {!this.state.selectedLedger.name &&
@@ -266,27 +268,22 @@ class Ledger extends React.Component {
                                 PURPOSE: {this.state.selectedLedger?.purpose}
                             </div>}
                         </div>
-                        <div className="ledger-details">
-                            <div className="card-title"> Ledger Categories
-                            </div>
-                            {this.state.categoryData.length > 0 &&
-                                <div>
-                                    {console.log(this.state.categoryData)}
-                                    <BarChart width={600} height={250} data={data}>
-                                        <Bar dataKey="uv" fill="#8884d8" />
-                                    </BarChart>
-                                    {console.log(this.state.categoryData)}
-                                </div>}
-                        </div>
                     </div>
                 </div>
-                <div className="graph-panel">
-                    <div className="ledger-history">
-                        <div className="card-title"> Ledger Payment
+                <div className="row row-cols-1 row-cols-xl-3 g-3">
+                    <div className="col">
+                        <div className="graph-card">
+                            <div className="card-title"> Calendar Graph </div>
                         </div>
                     </div>
-                    <div className="ledger-history">
-                        <div className="card-title"> Ledger Calendar
+                    <div className="col">
+                        <div className="graph-card">
+                            <div className="card-title"> Payment Graph </div>
+                        </div>
+                    </div>
+                    <div className="col">
+                        <div className="graph-card">
+                            <div className="card-title"> Category Graph </div>
                         </div>
                     </div>
                 </div>

@@ -94,9 +94,9 @@ class Shop extends React.Component {
         }
 
         return (
-            <div style={{ marginLeft: "20%" }}>
+            <div>
                 <SettingsBar />
-                <div className="stat-card-panel">
+                <div className="row row-cols-1 row-cols-md-2 row-cols-xl-4">
                     <StatCards backgroundColor={this.state.color1} text="TOTAL SHOPS" amount={this.state.totalShops} />
                     <div className="shop-overview">
                         <div style={{ alignItems: "flex-start" }} className="card-title"> Shop Overview

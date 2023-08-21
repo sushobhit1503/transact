@@ -95,9 +95,9 @@ class Payment extends React.Component {
         }
 
         return (
-            <div style={{ marginLeft: "20%" }}>
+            <div>
                 <SettingsBar />
-                <div className="stat-card-panel">
+                <div className="row row-cols-1 row-cols-md-2 row-cols-xl-4">
                     <StatCards backgroundColor={this.state.color1} text="TOTAL PAYMENT METHODS" amount={this.state.allPayments.length} />
                     <div className="shop-overview">
                         <div style={{ alignItems: "flex-start" }} className="card-title"> Payment Overview

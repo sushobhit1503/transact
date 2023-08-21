@@ -1,10 +1,14 @@
 import React from "react";
 import "./SettingsBar.css"
+import "./Sidebar.css"
 import SelectSearch from "react-select-search";
 import { UilChannelAdd } from '@iconscout/react-unicons'
+import { UilSetting } from '@iconscout/react-unicons'
 import { UilFilePlusAlt } from '@iconscout/react-unicons'
 import { UilFolderPlus } from '@iconscout/react-unicons'
-import { UilPlusSquare } from '@iconscout/react-unicons'
+import { UilBars } from '@iconscout/react-unicons'
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import Button from '@mui/material/Button';
 import { UilStore } from '@iconscout/react-unicons'
 import { UilCreditCardSearch } from '@iconscout/react-unicons'
 import SkyLight from "react-skylight";
@@ -14,6 +18,12 @@ import Switch from "react-switch"
 import { accountTypeOptions, shopCityOptions, categoryOptions } from "../constants";
 import { createNewAccount, getEachAccount } from "../Backend/accountCalls"
 import { getEachLedger } from "../Backend/ledgerCalls"
+import Logo from "../Assets/logo.png"
+import { UilCreateDashboard } from '@iconscout/react-unicons'
+import { UilUniversity } from '@iconscout/react-unicons'
+import { UilChannel } from '@iconscout/react-unicons'
+import { UilExchange } from '@iconscout/react-unicons'
+import Box from '@mui/material/Box';
 
 class SettingsBar extends React.Component {
     constructor() {
@@ -44,7 +54,8 @@ class SettingsBar extends React.Component {
             credit: false,
             isCredit: false,
             creditPerson: "",
-            lent: false
+            lent: false,
+            anchor: false
         }
     }
     async componentDidMount() {
@@ -106,11 +117,50 @@ class SettingsBar extends React.Component {
             this.setState({ selectedAccountName: `${result.bankName} - ${result.accountType}` })
         })
         getEachLedger(localStorage.getItem("ledger")).then(result => {
-            this.setState ({selectedLedgerName: result.name})
+            this.setState({ selectedLedgerName: result.name })
         })
 
     }
     render() {
+        const toggleDrawer = (open) => (event) => {
+            if (
+                event &&
+                event.type === 'keydown' &&
+                (event.key === 'Tab' || event.key === 'Shift')
+            ) {
+                return;
+            }
+
+            this.setState({ anchor: open })
+        };
+        const list = () => (
+            <Box
+                sx={{ width: 350, backgroundColor: "var(--primary-color)" }}
+                role="presentation"
+                onClick={toggleDrawer(false)}
+                onKeyDown={toggleDrawer(false)}
+
+            >
+                <img alt="/logo" src={Logo} className="sidebar-logo" />
+                <div className="sidebar-menu">
+                    <div className={`sidebar-menu-item ${this.state.activeMenu === "" ? "sidebar-menu-item-active" : ""}`}>
+                        <a style={{ display: "flex" }} className="sidebar-menu-item" href="/"> <UilCreateDashboard style={{ marginRight: "0.5rem" }} />Dashboard</a>
+                    </div>
+                    <div className={`sidebar-menu-item ${this.state.activeMenu === "transaction" ? "sidebar-menu-item-active" : ""}`}>
+                        <a style={{ display: "flex" }} className="sidebar-menu-item" href="/transaction"> <UilExchange style={{ marginRight: "0.5rem" }} /> Transactions </a>
+                    </div>
+                    <div className={`sidebar-menu-item ${this.state.activeMenu === "account" ? "sidebar-menu-item-active" : ""}`}>
+                        <a style={{ display: "flex" }} className="sidebar-menu-item" href="/account"><UilUniversity style={{ marginRight: "0.5rem" }} /> Accounts </a>
+                    </div>
+                    <div className={`sidebar-menu-item ${this.state.activeMenu === "ledger" ? "sidebar-menu-item-active" : ""}`}>
+                        <a style={{ display: "flex" }} className="sidebar-menu-item" href="/ledger"><UilChannel style={{ marginRight: "0.5rem" }} /> Ledgers </a>
+                    </div>
+                    <div className={`sidebar-menu-item ${this.state.activeMenu === "settings" ? "sidebar-menu-item-active" : ""}`}>
+                        <a style={{ display: "flex" }} className="sidebar-menu-item" href="/settings"><UilSetting style={{ marginRight: "0.5rem" }} /> Settings </a>
+                    </div>
+                </div>
+            </Box>
+        );
         const onChange = (event) => {
             const { name, value } = event.target
             this.setState({ [name]: value })
@@ -120,7 +170,7 @@ class SettingsBar extends React.Component {
                 bankName: this.state.bankName,
                 accountType: this.state.accountType
             }
-            createNewAccount(data).then (() => {
+            createNewAccount(data).then(() => {
                 window.location.reload()
             })
         }
@@ -174,164 +224,217 @@ class SettingsBar extends React.Component {
         }
         return (
             <div>
-                <div className="settings-container">
-                    <div className="settings-heading">
-                        {this.state.activeMenu.toUpperCase()}
-                    </div>
-                    <div className="settings-panel">
-                        <div onClick={() => this.transactionModal.show()} className="settings-add-button">
+                <div className="d-flex flex-xl-row flex-column align-items-center">
+                    <React.Fragment>
+                        <Button className="py-2 px-1 rounded ms-3" style={{ color: "var(--tertiary-color)", backgroundColor: "var(--text-color)" }} onClick={toggleDrawer(true)}>
+                            <UilBars />
+                        </Button>
+                        <span className="settings-heading">
+                            {this.state.activeMenu.toUpperCase()}
+                        </span>
+                        <SwipeableDrawer
+                            style={{ backgroundColor: "var(--primary-color)" }}
+                            anchor="left"
+                            open={this.state.anchor}
+                            onClose={toggleDrawer(false)}
+                            onOpen={toggleDrawer(true)}
+                        >
+                            {list("left")}
+                        </SwipeableDrawer>
+                    </React.Fragment>
+                    <div className="d-flex me-3 ms-auto my-3">
+                        <div data-bs-toggle="modal" data-bs-target="#transactModal" className="settings-add-button">
                             <UilFilePlusAlt />
                         </div>
-                        <div onClick={() => this.shopModal.show()} className="settings-add-button">
+                        <div data-bs-toggle="modal" data-bs-target="#shopModal" className="settings-add-button">
                             <UilStore />
                         </div>
-                        <div onClick={() => this.paymentModal.show()} className="settings-add-button">
+                        <div data-bs-toggle="modal" data-bs-target="#paymentModal" className="settings-add-button">
                             <UilCreditCardSearch />
                         </div>
-                        <div onClick={() => this.ledgerModal.show()} className="settings-add-button">
+                        <div data-bs-toggle="modal" data-bs-target="#ledgerModal" className="settings-add-button">
                             <UilChannelAdd />
                         </div>
-                        <div onClick={() => this.accountModal.show()} className="settings-add-button">
+                        <div data-bs-toggle="modal" data-bs-target="#accountModal" className="settings-add-button">
                             <UilFolderPlus />
                         </div>
                     </div>
                 </div>
-                <SkyLight hideOnOverlayClicked ref={ref => this.transactionModal = ref} title="CREATE TRANSACTION">
-                    <div className="settings-modify-modal">
-                        <div className="settings-input-style">
-                            <div className="settings-label">Item Name:</div>
-                            <input onChange={onChange} value={this.state.itemName} name="itemName" placeholder="Enter item Name" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Shop Name:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ shopName: value }) }} search options={this.state.allShops} name="shopName" value={this.state.shopName} placeholder="Select Shop" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Date:</div>
-                            <input onChange={onChange} value={this.state.date} name="date" placeholder="Enter the date" type="date" />
-                        </div>
-                    </div>
-                    <div className="settings-modify-modal">
-                        <div className="settings-input-style">
-                            <div className="settings-label">Amount:</div>
-                            <input onChange={onChange} value={this.state.amount} name="amount" placeholder="Enter Amount" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Payment Method:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ paymentMethod: value }) }} search options={this.state.allPayments} value={this.state.paymentMethod} name="paymentMethod" placeholder="Select Payment Method" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Category:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ category: value }) }} search options={categoryOptions} value={this.state.category} name="category" placeholder="Select Category" />
+                <div class="modal fade" id="accountModal" tabindex="-1" role="dialog" aria-labelledby="accountModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="accountModalLabel">CREATE ACCOUNT</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div className="row row-cols-1 g-3">
+                                    <div className="col">
+                                        <div className="settings-label">Bank Name:</div>
+                                        <input onChange={onChange} value={this.state.bankName} name="bankName" placeholder="Enter Bank Name" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Account Type:</div>
+                                        <SelectSearch onChange={(value) => { this.setState({ accountType: value }) }} value={this.state.accountType} search options={accountTypeOptions} name="accountType" placeholder="Select Account Type" />
+                                    </div>
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                    <button onClick={onCreateAccount} className="success-button">
+                                        CREATE ACCOUNT
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div className="settings-modify-modal">
-                        <div className="settings-input-style">
-                            <div className="settings-label">Account:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ selectedAccount: value }) }} search options={this.state.allAccounts} value={this.state.selectedAccount} name="selectedAccount" placeholder="Select Account" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Ledger:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ selectedLedger: value }) }} search options={this.state.allLedgers} value={this.state.selectedLedger} name="selectedLedger" placeholder="Select Ledger" />
-                        </div>
-                    </div>
-                    <div className="settings-modify-modal">
-                        <div className="settings-input-style">
-                            <div className="settings-label">Credit Transaction?</div>
-                            <Switch onChange={(value) => this.setState({ credit: value })} checked={this.state.credit} />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Money Given on Credit?</div>
-                            <Switch onChange={(value) => this.setState({ lent: value })} checked={this.state.lent} />
-                        </div>
-                        {this.state.lent &&
-                            <div className="settings-input-style">
-                                <div className="settings-label">Person Name:</div>
-                                <input onChange={onChange} value={this.state.creditPerson} name="creditPerson" placeholder="Enter the name of the person" />
-                            </div>}
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                        <button onClick={onTransactionCreate} style={{ marginTop: "0rem" }} className="success-button">
-                            CREATE TRANSACTION
-                        </button>
-                    </div>
-                </SkyLight>
-                <SkyLight hideOnOverlayClicked ref={ref => this.shopModal = ref} title="CREATE SHOP">
-                    <div className="settings-modify-modal">
-                        <div className="settings-input-style">
-                            <div className="settings-label">Shop Name:</div>
-                            <input onChange={onChange} value={this.state.shopName} name="shopName" placeholder="Enter Shop Name" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Location:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ shopCity: value }) }} search options={shopCityOptions} value={this.state.shopCity} name="shopCity" placeholder="Select Shop Location" />
+                </div>
+                <div class="modal fade" id="ledgerModal" tabindex="-1" role="dialog" aria-labelledby="ledgerModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="accountModalLabel">CREATE LEDGER</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div className="row row-cols-1 g-3">
+                                    <div className="col">
+                                        <div className="settings-label">Ledger Name:</div>
+                                        <input onChange={onChange} value={this.state.ledgerName} name="ledgerName" placeholder="Enter Ledger Name" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Purpose:</div>
+                                        <input onChange={onChange} value={this.state.ledgerPurpose} name="ledgerPurpose" placeholder="Enter Ledger Purpose" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Linked Account:</div>
+                                        <SelectSearch onChange={(value) => { this.setState({ ledgerAccount: value }) }} search options={this.state.allAccounts} value={this.state.ledgerAccount} name="ledgerAccount" placeholder="Select Account" />
+                                    </div>
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                    <button onClick={onLedgerCreate} className="success-button">
+                                        CREATE LEDGER
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                        <button onClick={onShopCreate} className="success-button">
-                            CREATE SHOP
-                        </button>
-                    </div>
-                </SkyLight>
-                <SkyLight hideOnOverlayClicked ref={ref => this.paymentModal = ref} title="CREATE PAYMENT METHOD">
-                    <div className="settings-modify-modal">
-                        <div className="settings-input-style">
-                            <div className="settings-label">Payment Method Name:</div>
-                            <input onChange={onChange} value={this.state.paymentName} name="paymentName" placeholder="Enter Payment Method Name" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Account:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ selectedAccount: value }) }} search options={this.state.allAccounts} value={this.state.selectedAccount} name="selectedAccount" placeholder="Select Account" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Credit Card?</div>
-                            <Switch onChange={(value) => this.setState({ isCredit: value })} checked={this.state.isCredit} />
-                        </div>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                        <button onClick={onPaymentCreate} className="success-button">
-                            CREATE PAYMENT METHOD
-                        </button>
-                    </div>
-                </SkyLight>
-                <SkyLight hideOnOverlayClicked ref={ref => this.ledgerModal = ref} title="CREATE LEDGER">
-                    <div className="settings-modify-modal">
-                        <div className="settings-input-style">
-                            <div className="settings-label">Ledger Name:</div>
-                            <input onChange={onChange} value={this.state.ledgerName} name="ledgerName" placeholder="Enter Ledger Name" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Purpose:</div>
-                            <input onChange={onChange} value={this.state.ledgerPurpose} name="ledgerPurpose" placeholder="Enter Ledger Purpose" />
-                        </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Linked Account:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ ledgerAccount: value }) }} search options={this.state.allAccounts} value={this.state.ledgerAccount} name="ledgerAccount" placeholder="Select Account" />
+                </div>
+                <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="accountModalLabel">CREATE PAYMENT METHOD</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div className="row row-cols-1 g-3">
+                                    <div className="col">
+                                        <div className="settings-label">Payment Method Name:</div>
+                                        <input onChange={onChange} value={this.state.paymentName} name="paymentName" placeholder="Enter Payment Method Name" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Account:</div>
+                                        <SelectSearch onChange={(value) => { this.setState({ selectedAccount: value }) }} search options={this.state.allAccounts} value={this.state.selectedAccount} name="selectedAccount" placeholder="Select Account" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Credit Card?</div>
+                                        <Switch onChange={(value) => this.setState({ isCredit: value })} checked={this.state.isCredit} />
+                                    </div>
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                    <button onClick={onPaymentCreate} className="success-button">
+                                        CREATE PAYMENT METHOD
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                        <button onClick={onLedgerCreate} className="success-button">
-                            CREATE LEDGER
-                        </button>
-                    </div>
-                </SkyLight>
-                <SkyLight hideOnOverlayClicked ref={ref => this.accountModal = ref} title="CREATE ACCOUNT">
-                    <div className="settings-modify-modal">
-                        <div className="settings-input-style">
-                            <div className="settings-label">Bank Name:</div>
-                            <input onChange={onChange} value={this.state.bankName} name="bankName" placeholder="Enter Bank Name" />
+                </div>
+                <div class="modal fade" id="shopModal" tabindex="-1" role="dialog" aria-labelledby="shopModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="accountModalLabel">CREATE SHOP</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div className="row row-cols-1 g-3">
+                                    <div className="col">
+                                        <div className="settings-label">Shop Name:</div>
+                                        <input onChange={onChange} value={this.state.shopName} name="shopName" placeholder="Enter Shop Name" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Location:</div>
+                                        <SelectSearch onChange={(value) => { this.setState({ shopCity: value }) }} search options={shopCityOptions} value={this.state.shopCity} name="shopCity" placeholder="Select Shop Location" />
+                                    </div>
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                    <button onClick={onShopCreate} className="success-button">
+                                        CREATE SHOP
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div className="settings-input-style">
-                            <div className="settings-label">Account Type:</div>
-                            <SelectSearch onChange={(value) => { this.setState({ accountType: value }) }} value={this.state.accountType} search options={accountTypeOptions} name="accountType" placeholder="Select Account Type" />
+                    </div>
+                </div>
+                <div class="modal fade" id="transactModal" tabindex="-1" role="dialog" aria-labelledby="transactModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="accountModalLabel">CREATE TRANSACTION</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div className="row row-cols-xl-2 g-3 row-cols-1">
+                                    <div className="col">
+                                        <div className="settings-label">Item Name:</div>
+                                        <input onChange={onChange} value={this.state.itemName} name="itemName" placeholder="Enter item Name" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Shop Name:</div>
+                                        <SelectSearch onChange={(value) => { this.setState({ shopName: value }) }} search options={this.state.allShops} name="shopName" value={this.state.shopName} placeholder="Select Shop" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Date:</div>
+                                        <input onChange={onChange} value={this.state.date} name="date" placeholder="Enter the date" type="date" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Amount:</div>
+                                        <input onChange={onChange} value={this.state.amount} name="amount" placeholder="Enter Amount" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Payment Method:</div>
+                                        <SelectSearch onChange={(value) => { this.setState({ paymentMethod: value }) }} search options={this.state.allPayments} value={this.state.paymentMethod} name="paymentMethod" placeholder="Select Payment Method" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Category:</div>
+                                        <SelectSearch onChange={(value) => { this.setState({ category: value }) }} search options={categoryOptions} value={this.state.category} name="category" placeholder="Select Category" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Account:</div>
+                                        <SelectSearch onChange={(value) => { this.setState({ selectedAccount: value }) }} search options={this.state.allAccounts} value={this.state.selectedAccount} name="selectedAccount" placeholder="Select Account" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Ledger:</div>
+                                        <SelectSearch onChange={(value) => { this.setState({ selectedLedger: value }) }} search options={this.state.allLedgers} value={this.state.selectedLedger} name="selectedLedger" placeholder="Select Ledger" />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Credit Transaction?</div>
+                                        <Switch onChange={(value) => this.setState({ credit: value })} checked={this.state.credit} />
+                                    </div>
+                                    <div className="col">
+                                        <div className="settings-label">Money Given on Credit?</div>
+                                        <Switch onChange={(value) => this.setState({ lent: value })} checked={this.state.lent} />
+                                    </div>
+                                    {this.state.lent &&
+                                        <div className="col">
+                                            <div className="settings-label">Person Name:</div>
+                                            <input onChange={onChange} value={this.state.creditPerson} name="creditPerson" placeholder="Enter the name of the person" />
+                                        </div>}
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                    <button onClick={onTransactionCreate} style={{ marginTop: "0rem" }} className="success-button">
+                                        CREATE TRANSACTION
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                        <button onClick={onCreateAccount} className="success-button">
-                            CREATE ACCOUNT
-                        </button>
-                    </div>
-                </SkyLight>
+                </div>
             </div>
         )
     }

@@ -1,16 +1,4 @@
-.settings-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-.settings-panel {
-    display: flex;
-    justify-content: flex-end;
-    margin-right: 2.5rem;
-}
-
 .settings-heading {
-    align-self: center;
     margin-left: 1rem;
     color: var(--text-color);
     font-weight: bolder;
@@ -145,15 +133,6 @@
 .select-search-row:not(:last-child) .select-search-group-header {
     margin-bottom: 10px;
     z-index: 10;
-}
-
-.settings-modify-modal {
-    display: flex;
-}
-
-.settings-input-style {
-    margin: 1rem;
-    width: max-content;
 }
 
 .settings-label {

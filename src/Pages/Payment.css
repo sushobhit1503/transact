@@ -7,13 +7,7 @@
     font-size: 1rem;
 }
 
-.payment-overview-container {
-    display: flex;
-}
-
 .payment-overview-stats {
-    width: 350px;
-    margin: 0rem 1rem 0rem 0rem;
     padding: 0.5rem;
     background-color: var(--primary-color);
     color: var(--text-color);
