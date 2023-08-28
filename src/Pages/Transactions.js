@@ -2,20 +2,16 @@ import React from "react";
 import "./Transactions.css"
 import SettingsBar from "../Components/SettingsBar";
 import StatCards from "../Components/StatCards";
-import axios from "axios";
-import { baseUrl } from "../index";
 import randomColor from "randomcolor";
 import Table from "../Components/Table";
-import { calculateOverallCreditTransactions, calculateOverallDebitTransactions, calculateOverallLentTransactions, calculateAllTransc, calculateLentTransc } from "../Transactionutils";
+import { calculateLentTransc, calculateAllTransc } from "../Transactionutils";
+import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Add from '@material-ui/icons/Add';
 import Remove from '@material-ui/icons/Remove';
-import { getAllShops } from "../Backend/shopCalls";
 import CheckCircle from "@material-ui/icons/CheckCircle";
-import { changeTranscAmount, deleteTransaction } from "../Backend/transactionCalls";
-import { getAllAccounts } from "../Backend/accountCalls";
-import { getAllLedgers } from "../Backend/ledgerCalls";
-import { getAllPaymentMethods } from "../Backend/paymentCalls";
+import { changeTranscAmount, deleteTransaction, getEachTransc } from "../Backend/transactionCalls";
+import { creditTranscWithoutTransfer, debitTranscLent, debitTranscWithoutTransfer } from "../Utils/commonUtils";
 
 class Transactions extends React.Component {
     constructor() {
@@ -26,6 +22,7 @@ class Transactions extends React.Component {
             totalLent: 0,
             allLentTransc: [],
             allTransc: [],
+            oneTransaction: null,
             settledAmount: 0,
             color1: "",
             color2: "",
@@ -34,25 +31,17 @@ class Transactions extends React.Component {
         }
     }
     componentDidMount() {
-        axios.get(`${baseUrl}/transaction/all`).then(result => {
-            const totalCredit = calculateOverallCreditTransactions(result.data)
-            const totalDebit = calculateOverallDebitTransactions(result.data)
-            const totalLent = calculateOverallLentTransactions(result.data)
-            getAllShops().then(resultData => {
-                getAllPaymentMethods().then(paymentData => {
-                    const allLentTransc = calculateLentTransc(result.data, resultData, paymentData)
-                    getAllAccounts().then(allAccounts => {
-                        getAllLedgers().then(allLedgers => {
-                            getAllPaymentMethods().then(allPaymentMethods => {
-                                const allTransc = calculateAllTransc(result.data, resultData, allAccounts, allLedgers, allPaymentMethods)
-                                this.setState({ totalCredit, totalDebit, totalLent, allLentTransc, allTransc })
-                            })
-                        })
-                    })
-                })
-            })
-        })
-        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor() })
+        const allTranc = JSON.parse(localStorage.getItem("transc"))
+        const allShops = JSON.parse(localStorage.getItem("shops"))
+        const allPayment = JSON.parse(localStorage.getItem("payments"))
+        const allLedger = JSON.parse(localStorage.getItem("ledgers"))
+        const allAccounts = JSON.parse(localStorage.getItem("accounts"))
+        const totalCredit = creditTranscWithoutTransfer(allTranc).totalCredit
+        const totalDebit = debitTranscWithoutTransfer(allTranc).totalDebit
+        const totalLent = debitTranscLent(allTranc).totalLent
+        const allLentTransc = calculateLentTransc(allTranc, allShops, allPayment)
+        const allTransc = calculateAllTransc(allTranc, allShops, allAccounts, allLedger, allPayment)
+        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalCredit, totalDebit, totalLent, allLentTransc, allTransc })
     }
     render() {
         const allTranscLentColumn = [
@@ -103,7 +92,7 @@ class Transactions extends React.Component {
                     customBodyRender: (value, tableMeta, updateValue) => {
                         return (
                             <div style={{ display: "flex" }}>
-                                <input onChange={onChange} value={this.state.settledAmount} style={{ width: "40px" }} placeholder="Rs. 0" />
+                                <input onChange={onChange} value={this.state.settledAmount} style={{ width: "100px" }} placeholder="Rs. 0" />
                             </div>
                         )
                     },
@@ -115,7 +104,7 @@ class Transactions extends React.Component {
                 label: "Action",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
-                        const itemId = tableMeta.rowData[4]
+                        const itemId = tableMeta.rowData[6]
                         return (
                             <div style={{ display: "flex", cursor: "pointer" }}>
                                 <CheckCircle onClick={() => handleCheckClick(itemId)} />
@@ -216,14 +205,13 @@ class Transactions extends React.Component {
             },
             {
                 name: "uid",
-                label: "Delete",
+                label: "Edit",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
                         const itemId = tableMeta.rowData[9]
-                        console.log(tableMeta.rowData);
                         return (
                             <div style={{ display: "flex", cursor: "pointer" }}>
-                                <DeleteIcon onClick={() => handleDeleteClick(itemId)} />
+                                <EditIcon onClick={() => handleEditClick(itemId)} />
                             </div>
                         )
                     },
@@ -233,14 +221,20 @@ class Transactions extends React.Component {
         ];
 
         const handleCheckClick = (accountId) => {
-            changeTranscAmount(this.state.settledAmount, accountId).then(() => {
-                window.location.reload()
-            })
+            changeTranscAmount(this.state.settledAmount, accountId).then(
+                window.alert("Amount changed")
+            )
         }
 
         const handleDeleteClick = (accountId) => {
-            deleteTransaction(accountId).then(() => {
-                window.location.reload()
+            deleteTransaction(accountId).then(
+                window.alert("Transaction Deleted")
+            )
+        }
+
+        const handleEditClick = (accountId) => {
+            getEachTransc(accountId).then(result => {
+                this.setState({ oneTransaction: result })
             })
         }
 
@@ -271,14 +265,38 @@ class Transactions extends React.Component {
                     <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Transaction Overview </div>
+                            <div>
+                                {!this.state.oneTransaction && <div className="card-subheading">
+                                    No Transaction is selected to view
+                                </div>}
+                                {this.state.oneTransaction && <div className="card-heading d-flex justify-content-between">
+                                    {this.state.oneTransaction.itemName}
+                                    <div>
+                                        <DeleteIcon className="cursor" onClick={() => handleDeleteClick(this.state.oneTransaction.uid)} />
+                                    </div>
+                                </div>}
+                                {this.state.oneTransaction && <div className="card-subheading">
+                                    <div className="m-1">CATEGORY: {this.state.oneTransaction.category}</div>
+                                    <div className="m-1">DATE: {this.state.oneTransaction.date}</div>
+                                    <div className="m-1">AMOUT: {this.state.oneTransaction.amount}</div>
+                                    <div className="m-1">
+                                        <input onChange={onChange} value={this.state.settledAmount} style={{ width: "100px" }} placeholder="Rs. 0" />
+                                    </div>
+                                    <div className="mt-3">
+                                        <button className="btn btn-primary" onClick={() => handleEditClick(this.state.oneTransaction.uid)}>
+                                            Edit Amount
+                                        </button>
+                                    </div>
+                                </div>}
+                            </div>
                         </div>
                     </div>
-                    <div className="col">
+                    {/* <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Transaction Data Graphs </div>
                             One controller to select the parameters and a button and then that graph will be displayed
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         )

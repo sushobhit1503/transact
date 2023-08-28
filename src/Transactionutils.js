@@ -1,35 +1,8 @@
-export const calculateOverallCreditTransactions = (allTransactions) => {
-    var totalCreditTransc = 0
-    allTransactions.map (eachTransaction => {
-        if (eachTransaction.credit)
-            totalCreditTransc += 1
-    })
-    return totalCreditTransc
-}
-
-export const calculateOverallDebitTransactions = (allTransactions) => {
-    var totalDebitTransc = 0
-    allTransactions.map (eachTransaction => {
-        if (!eachTransaction.credit && eachTransaction.category !== "Credit Card Payments")
-            totalDebitTransc += 1
-    })
-    return totalDebitTransc
-}
-
-export const calculateOverallLentTransactions = (allTransactions) => {
-    var totalLentTransc = 0
-    allTransactions.map (eachTransaction => {
-        if (eachTransaction.lent && eachTransaction.amount !== 0)
-            totalLentTransc += 1
-    })
-    return totalLentTransc
-}
-
 export const calculateLentTransc = (allTransc, allShops, allPayments) => {
     const allLentTransc = allTransc.filter (transc => transc.lent === true && transc.amount !== 0).map (transaction => {
         const {shopName, amount, itemName, uid, creditPerson, paymentMethod } = transaction
-        const shop = allShops.find(shop => shop.uid === shopName).name
-        const paymentName = allPayments.find(payment => payment.uid === paymentMethod).name
+        const shop = allShops.find(shop => shop.uid === shopName)?.name
+        const paymentName = allPayments.find(payment => payment.uid === paymentMethod)?.paymentMethodName
         return {shop, amount, itemName, uid, creditPerson, paymentName}
     })
 
@@ -45,7 +18,6 @@ export const calculateAllTransc = (allTransc, allShops, allAccounts, allLedgers,
         const accountObject = allAccounts.find (eachAccount => eachAccount.uid === account)
         const accountName = `${accountObject.bankName} - ${accountObject.accountType}`
         const paymentName = allPayment.find (eachPayment => eachPayment.uid === paymentMethod)?.paymentMethodName
-
         return {uid, itemName, shop, ledgerName, accountName, paymentName, category, credit, amount, date }
     })
 

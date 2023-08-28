@@ -2,8 +2,6 @@ import React from "react";
 import "./Ledger.css"
 import SettingsBar from "../Components/SettingsBar";
 import randomColor from "randomcolor";
-import { baseUrl } from "../index";
-import axios from "axios";
 import StatCards from "../Components/StatCards";
 import { calculateActiveLedgers, calculateAllLedgers, calculateCalendarLedger, calculateCategoryLedger, calculateNegativeLedgers, calculateNonActiveLedgers, calculatePaymentMethodsLedger, } from "../LedgerUtils";
 import IconButton from '@material-ui/core/IconButton';
@@ -11,12 +9,15 @@ import CheckCircle from '@material-ui/icons/CheckCircle';
 import Cancel from "@material-ui/icons/Cancel"
 import Visibility from '@material-ui/icons/Visibility'
 import Table from "../Components/Table";
+import CanvasJSReact from '@canvasjs/react-charts';
 import { getEachLedger, deActivateLedger, activateLedger } from "../Backend/ledgerCalls";
 import { getEachAccount } from "../Backend/accountCalls";
-import { getAllTransc, getTranscByLedger } from "../Backend/transactionCalls";
-import { getAllPaymentMethods } from "../Backend/paymentCalls";
-import { BarChart, Bar } from "recharts";
+import { getTranscByLedger } from "../Backend/transactionCalls";
+import Calendar from "../Components/Calendar";
+import { calculateOverallCategoryShare, calculateOverallPaymentShare } from "../Utils/DashboardUtils";
 
+
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class Ledger extends React.Component {
     constructor() {
@@ -31,7 +32,6 @@ class Ledger extends React.Component {
             paymentData: [],
             categoryData: [],
             calendarData: [],
-            show: false,
             color1: "",
             color2: "",
             color3: "",
@@ -39,24 +39,13 @@ class Ledger extends React.Component {
         }
     }
     componentDidMount() {
-        axios.get(`${baseUrl}/ledger/all`).then(result => {
-            const totalActive = calculateActiveLedgers(result.data)
-            const totalNonActive = calculateNonActiveLedgers(result.data)
-            getAllTransc().then((transData) => {
-                const totalNegative = calculateNegativeLedgers(result.data, transData)
-                const allLedgers = calculateAllLedgers(result.data, transData)
-                this.setState({ totalActive, totalNegative, totalNonActive, allLedgers })
-            })
-        })
-        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor() })
-        getTranscByLedger("647b681972e1812b5d9145c8").then(result => {
-            getAllPaymentMethods().then(data => {
-                const paymentData = calculatePaymentMethodsLedger(result, data)
-                const categoryData = calculateCategoryLedger(result)
-                const calendarData = calculateCalendarLedger(result)
-                this.setState({ paymentData, calendarData, categoryData, show: true }, () => console.log(this.state.categoryData, this.state.show))
-            })
-        })
+        const allLedger = JSON.parse(localStorage.getItem("ledgers"))
+        const allTransc = JSON.parse(localStorage.getItem("transc"))
+        const totalActive = calculateActiveLedgers(allLedger)
+        const totalNonActive = calculateNonActiveLedgers(allLedger)
+        const totalNegative = calculateNegativeLedgers(allLedger, allTransc)
+        const allLedgers = calculateAllLedgers(allLedger, allTransc)
+        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalActive, totalNegative, totalNonActive, allLedgers })
     }
 
     render() {
@@ -146,14 +135,6 @@ class Ledger extends React.Component {
                 }
             }
         ];
-        const options = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                }
-            },
-        };
         const handleStatusClick = (accountId, status) => {
             if (status) {
                 deActivateLedger(accountId).then(() => window.location.reload())
@@ -162,53 +143,8 @@ class Ledger extends React.Component {
                 activateLedger(accountId).then(() => window.location.reload())
         }
 
-        const data = [
-            {
-                name: "Page A",
-                uv: 4000,
-                pv: 2400,
-                amt: 2400
-            },
-            {
-                name: "Page B",
-                uv: 3000,
-                pv: 1398,
-                amt: 2210
-            },
-            {
-                name: "Page C",
-                uv: 2000,
-                pv: 9800,
-                amt: 2290
-            },
-            {
-                name: "Page D",
-                uv: 2780,
-                pv: 3908,
-                amt: 2000
-            },
-            {
-                name: "Page E",
-                uv: 1890,
-                pv: 4800,
-                amt: 2181
-            },
-            {
-                name: "Page F",
-                uv: 2390,
-                pv: 3800,
-                amt: 2500
-            },
-            {
-                name: "Page G",
-                uv: 3490,
-                pv: 4300,
-                amt: 2100
-            }
-        ];
-
         const handleViewClick = (accountId) => {
-
+            var allPayments = JSON.parse(localStorage.getItem("payments"))
             getEachLedger(accountId).then(result => {
                 this.setState({ selectedLedger: result }, () => {
                     getEachAccount(result.account).then(result1 => {
@@ -217,19 +153,35 @@ class Ledger extends React.Component {
                 })
             })
             getTranscByLedger(accountId).then(result => {
-                getAllPaymentMethods().then(data => {
-                    const paymentData = calculatePaymentMethodsLedger(result, data)
-                    const categoryData = calculateCategoryLedger(result)
-                    const calendarData = calculateCalendarLedger(result)
-                    this.setState({ paymentData, calendarData, categoryData, show: true }, () => console.log(this.state.categoryData, this.state.show))
-                })
+                const paymentData = calculateOverallPaymentShare (result, allPayments)
+                const categoryData = calculateOverallCategoryShare (result)
+                const calendarData = calculateCalendarLedger(result)
+                this.setState({ paymentData, calendarData, categoryData })
             })
         }
 
-
-        const onChange = (value) => {
-            this.setState({ history: value })
+        const optionsPayment = {
+            exportEnabled: true,
+            animationEnabled: true,
+            theme: "dark2",
+            data: [{
+                type: "pie",
+                startAngle: 75,
+                dataPoints: this.state.paymentData
+            }]
         }
+
+        const optionsCategory = {
+            exportEnabled: true,
+            animationEnabled: true,
+            theme: "dark2",
+            data: [{
+                type: "pie",
+                startAngle: 75,
+                dataPoints: this.state.categoryData
+            }]
+        }
+
         return (
             <div>
                 <SettingsBar />
@@ -270,20 +222,46 @@ class Ledger extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className="row row-cols-1 row-cols-xl-3 g-3">
+                <div className="row row-cols-1 row-cols-xl-2 g-3">
                     <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Calendar Graph </div>
+                            <div>
+                                {this.state.calendarData.length === 0 ?
+                                    <div className="payment-overview-empty">
+                                        No account selected
+                                    </div> :
+                                    <div className="myCustomHeight">
+                                        <Calendar currentEvents={this.state.calendarData} />
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
                     <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Payment Graph </div>
+                            <div>
+                                {this.state.paymentData.length === 0 ?
+                                    <div className="payment-overview-empty">
+                                        No account selected
+                                    </div> :
+                                    <CanvasJSChart options={optionsPayment}
+                                    />
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Category Graph </div>
+                            <div>
+                                {this.state.categoryData.length === 0 ?
+                                    <div className="payment-overview-empty">
+                                        No account selected
+                                    </div> :
+                                    <CanvasJSChart options={optionsCategory}
+                                    />
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>

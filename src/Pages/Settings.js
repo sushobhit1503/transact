@@ -2,10 +2,8 @@ import React from "react";
 import "./Payment.css"
 import SettingsBar from "../Components/SettingsBar";
 import StatCards from "../Components/StatCards";
-import axios from "axios";
 import randomColor from "randomcolor";
 import Table from "../Components/Table";
-import { baseUrl } from "../index";
 import { calculateShopOverview, cityWiseColumn, getCityWiseShop } from "../ShopUtils";
 import { deletePaymentMethod, getAllPaymentMethods, getEachPaymentMethod } from "../Backend/paymentCalls";
 import { accountWiseColumn, calculatePaymentOverview, getAccountWisePayment } from "../PaymentUtils";
@@ -13,7 +11,7 @@ import { getAllAccounts, getEachAccount } from "../Backend/accountCalls";
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Visibility from '@material-ui/icons/Visibility'
-import { deleteShop, getEachShop } from "../Backend/shopCalls"
+import { deleteShop, editShopCity, editShopName, getEachShop } from "../Backend/shopCalls"
 import { getAllTransc } from "../Backend/transactionCalls";
 
 class Settings extends React.Component {
@@ -31,21 +29,18 @@ class Settings extends React.Component {
             selectedPaymentOverview: {},
             selectedPayment: {},
             selectedAccount: {},
-            accountWise: []
+            accountWise: [],
+            cityChange: "",
+            nameChange: ""
         }
     }
     componentDidMount() {
-        axios.get(`${baseUrl}/shops`).then(result => {
-            this.setState({ totalShops: result.data.length, allShops: result.data, cityWiseShops: getCityWiseShop(result.data) })
-        })
-        getAllPaymentMethods().then(result => {
-            this.setState({ allPayments: result })
-            getAllAccounts().then(resultData => {
-                let accountWise = getAccountWisePayment(result, resultData);
-                this.setState({ accountWise })
-            })
-        })
-        this.setState({ color1: randomColor(), color2: randomColor() })
+        const allShops = JSON.parse(localStorage.getItem("shops"))
+        const allPayment = JSON.parse(localStorage.getItem("payments"))
+        const allAccount = JSON.parse(localStorage.getItem("accounts"))
+        this.setState({ totalShops: allShops.length, allShops, cityWiseShops: getCityWiseShop(allShops), allPayments: allPayment })
+        var accountWise = getAccountWisePayment(allPayment, allAccount)
+        this.setState({ color1: randomColor(), color2: randomColor(), accountWise })
     }
     render() {
         const allShopColumn = [
@@ -163,6 +158,28 @@ class Settings extends React.Component {
                 this.setState({ selectedPaymentOverview: calculatePaymentOverview(accountId, result) })
             })
         }
+
+        const onChangeCity = (event) => {
+            this.setState({ cityChange: event.target.value })
+        }
+
+        const onChangeName = (event) => {
+            this.setState({ nameChange: event.target.value })
+        }
+
+        const editShopDetails = (shopUid) => {
+            if (this.state.cityChange !== "") {
+                editShopCity (shopUid, this.state.cityChange).then (() => {
+                    window.alert("Shop City Changed")
+                })
+            }
+            if (this.state.nameChange !== "") {
+                editShopName (shopUid, this.state.nameChange).then (() => {
+                    window.alert("Shop Name Changed")
+                })
+            }
+        }
+
         return (
             <div>
                 <SettingsBar />
@@ -190,13 +207,13 @@ class Settings extends React.Component {
                                         </div>}
                                 </div>
                             </div>
-                            <div className="row row-cols-1 row-cols-xl-2 g-3">
-                                <div className="col-12">
-                                    {!this.state.selectedShop.name &&
-                                        <div className="payment-overview-empty">
-                                            Please select any shop to view its overview
-                                        </div>}
-                                </div>
+                            <div>
+                                {!this.state.selectedShop.name &&
+                                    <div className="payment-overview-empty">
+                                        Please select any shop to view its overview
+                                    </div>}
+                            </div>
+                            <div className="row row-cols-1 row-cols-xl-2">
                                 <div className="col">
                                     {this.state.selectedShop.name && <div className="payment-overview-stats">
                                         Rs. {this.state.selectedShopOverview.sum}
@@ -210,6 +227,20 @@ class Settings extends React.Component {
                                     </div>}
                                 </div>
                             </div>
+                            {this.state.selectedShop.name && 
+                            <div className="my-3">
+                                <input onChange={onChangeCity} value={this.state.cityChange} style={{ width: "200px" }} placeholder="Change City" />
+                            </div>}
+                            {this.state.selectedShop.name && 
+                            <div>
+                                <input onChange={onChangeName} value={this.state.nameChange} style={{ width: "200px" }} placeholder="Change Name" />
+                            </div>}
+                            {this.state.selectedShop.name && 
+                            <div className="mt-3">
+                                <button className="btn btn-primary" onClick={() => editShopDetails(this.state.selectedShop.uid)}>
+                                    EDIT SHOP
+                                </button>
+                            </div>}
                         </div>
                     </div>
                     <div className="col">
@@ -239,13 +270,13 @@ class Settings extends React.Component {
                                         </div>}
                                 </div>
                             </div>
+                            <div>
+                                {!this.state.selectedAccount.bankName &&
+                                    <div className="payment-overview-empty">
+                                        Please select any payment method to view its overview
+                                    </div>}
+                            </div>
                             <div className="row row-cols-1 row-cols-xl-2 g-3">
-                                <div className="col-12">
-                                    {!this.state.selectedAccount.bankName &&
-                                        <div className="payment-overview-empty">
-                                            Please select any payment method to view its overview
-                                        </div>}
-                                </div>
                                 <div className="col">
                                     {this.state.selectedAccount.bankName && <div className="payment-overview-stats">
                                         Rs. {this.state.selectedPaymentOverview.sum}

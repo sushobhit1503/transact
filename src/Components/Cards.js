@@ -22,7 +22,7 @@ class Cards extends React.Component {
                             )
                         })}
                     </Carousel>
-                    NOTE: This is the total expenditure not total unsettled amount
+                    NOTE: This is the total expenditure not total unsettled amount.
                 </div>
             </div>
         )

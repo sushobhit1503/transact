@@ -3,15 +3,18 @@ import "./Accounts.css"
 import SettingsBar from "../Components/SettingsBar";
 import StatCards from "../Components/StatCards";
 import randomColor from "randomcolor";
-import axios from "axios";
-import { baseUrl } from "../index";
-import { calculateCurrentAccounts, calculateSavingAccounts, calculateTotalBanks, calculateAccountOverview, calculateAccountLedgers, calculateLedgerAccountOverview } from "../AccountUtils";
+import { calculateCurrentAccounts, calculateSavingAccounts, calculateTotalBanks, calculateAccountOverview, calculateAccountLedgers, calculateLedgerAccountOverview, calculateCalendarData } from "../AccountUtils";
 import Table from "../Components/Table";
 import IconButton from '@material-ui/core/IconButton';
-import Visibility from '@material-ui/icons/Visibility'
-import { getAllTransc, getTranscByAccount } from "../Backend/transactionCalls";
+import Visibility from '@material-ui/icons/Visibility';
+import CanvasJSReact from '@canvasjs/react-charts';
+import { getTranscByAccount } from "../Backend/transactionCalls";
 import { getEachAccount } from "../Backend/accountCalls";
 import { getAllLedgers, getLedgersByAccount } from "../Backend/ledgerCalls";
+import { calculateOverallCategoryShare, calculateOverallPaymentShare } from "../Utils/DashboardUtils";
+import Calendar from "../Components/Calendar";
+
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class Accounts extends React.Component {
     constructor() {
@@ -24,6 +27,9 @@ class Accounts extends React.Component {
             selectedAccount: {},
             selectedLedger: [],
             selectedAccountOverview: {},
+            calendarData: [],
+            categoryData: [],
+            paymentData: [],
             color1: "",
             color2: "",
             color3: "",
@@ -32,16 +38,13 @@ class Accounts extends React.Component {
         }
     }
     componentDidMount() {
-        axios.get(`${baseUrl}/account/all`).then(result => {
-            const totalCurrent = calculateCurrentAccounts(result.data)
-            const totalSaving = calculateSavingAccounts(result.data)
-            const totalBanks = calculateTotalBanks(result.data)
-            getAllTransc().then(allTransc => {
-                const allAccounts = calculateAccountOverview(result.data, allTransc)
-                this.setState({ totalBanks, totalCurrent, totalSaving, allAccounts })
-            })
-        })
-        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor() })
+        var allAccount = JSON.parse(localStorage.getItem("accounts"))
+        var allTransc = JSON.parse(localStorage.getItem("transc"))
+        const totalCurrent = calculateCurrentAccounts(allAccount)
+        const totalSaving = calculateSavingAccounts(allAccount)
+        const totalBanks = calculateTotalBanks(allAccount)
+        const allAccounts = calculateAccountOverview(allAccount, allTransc)
+        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalBanks, totalCurrent, totalSaving, allAccounts })
     }
     render() {
         const allAccountColumn = [
@@ -138,6 +141,7 @@ class Accounts extends React.Component {
         ];
 
         const handleViewClick = (accountId) => {
+            var allPayments = JSON.parse(localStorage.getItem("payments"))
             getEachAccount(accountId).then(selectedAccount => {
                 this.setState({ selectedAccount })
             })
@@ -149,9 +153,36 @@ class Accounts extends React.Component {
             })
             getLedgersByAccount(accountId).then(result => {
                 const selectedAccountOverview = calculateLedgerAccountOverview(result)
-                console.log(selectedAccountOverview);
                 this.setState({ selectedAccountOverview })
             })
+            getTranscByAccount(accountId).then(result => {
+                const paymentData = calculateOverallPaymentShare(result, allPayments)
+                const categoryData = calculateOverallCategoryShare(result)
+                const calendarData = calculateCalendarData(result)
+                this.setState({ paymentData, categoryData, calendarData }, () => console.log(this.state.calendarData))
+            })
+        }
+
+        const optionsPayment = {
+            exportEnabled: true,
+            animationEnabled: true,
+            theme: "dark2",
+            data: [{
+                type: "pie",
+                startAngle: 75,
+                dataPoints: this.state.paymentData
+            }]
+        }
+
+        const optionsCategory = {
+            exportEnabled: true,
+            animationEnabled: true,
+            theme: "dark2",
+            data: [{
+                type: "pie",
+                startAngle: 75,
+                dataPoints: this.state.categoryData
+            }]
         }
 
         return (
@@ -208,20 +239,46 @@ class Accounts extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className="row row-cols-1 row-cols-xl-3 g-3">
+                <div className="row row-cols-1 row-cols-xl-2 g-3">
                     <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Calendar Graph </div>
+                            <div>
+                                {this.state.calendarData.length === 0 ?
+                                    <div className="payment-overview-empty">
+                                        No account selected
+                                    </div> :
+                                    <div className="myCustomHeight">
+                                        <Calendar currentEvents={this.state.calendarData} />
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
                     <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Payment Graph </div>
+                            <div>
+                                {this.state.paymentData.length === 0 ?
+                                    <div className="payment-overview-empty">
+                                        No account selected
+                                    </div> :
+                                    <CanvasJSChart options={optionsPayment}
+                                    />
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Category Graph </div>
+                            <div>
+                                {this.state.categoryData.length === 0 ?
+                                    <div className="payment-overview-empty">
+                                        No account selected
+                                    </div> :
+                                    <CanvasJSChart options={optionsCategory}
+                                    />
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>

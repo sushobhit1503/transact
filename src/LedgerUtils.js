@@ -56,65 +56,28 @@ export const calculateAllLedgers = (allLedgers, allTransc) => {
     return calculateLedgers
 }
 
-export const calculatePaymentMethodsLedger = (transc, paymentData) => {
-    const result = paymentData.map(data => {
-        const {uid, paymentMethodName} = data
-        const debit = transc.reduce ((sum, object) => {
-            if (object.paymentMethod === uid && !object.credit ) {
-                return sum + object.amount
-            }
-            return sum
-        }, 0)
-        const credit = transc.reduce ((sum, object) => {
-            if (object.paymentMethod === uid && object.credit ) {
-                return sum + object.amount
-            }
-            return sum
-        }, 0)
-        return {paymentMethodName, debit, credit}
-    })
-    return result
-}
+export const calculateCalendarLedger = (allTransc) => {
+    const dateTotals = {};
+    allTransc.forEach(eachTransaction => {
+        const { amount, credit, date } = eachTransaction;
 
-export const calculateCalendarLedger = (transc) => {
-    const result = transc.reduce ((acc, object) => {
-        const {amount, credit, date} = object
-        if (!acc[date]) {
-            acc[date] = {
-                debit: 0, credit: 0
-            }
+        if (!dateTotals[date]) {
+            dateTotals[date] = { expense: 0, revenue: 0 };
         }
-        if (credit) {
-            acc[date].credit += amount
+
+        if (!credit && eachTransaction.category !== "Transfer" && eachTransaction.category !== "Credit Card Payments") {
+            dateTotals[date].expense += amount;
+        } else if (credit && eachTransaction.category !== "Transfer") {
+            dateTotals[date].revenue += amount;
         }
-        else
-            acc[date].debit += amount
-        return acc
-    }, {})
-
-    const dateTotals = Object.keys(result).map(date => ({
-        date,
-        debit: result[date].debit,
-        credit: result[date].credit
-    }))
-    return dateTotals
-}
-
-export const calculateCategoryLedger = (transc) => {
-    const result = transc.reduce ((acc, obj) => {
-        const {amount, category, credit} = obj
-        if (acc[category] && !credit) {
-            acc[category] += amount
+    });
+    const resultArray = Object.keys(dateTotals).map(date => {
+        const array = [dateTotals[date].expense, dateTotals[date].revenue]
+        return {
+            date,
+            title: array
         }
-        else
-            acc[category] = amount
-        return acc;
-    }, {})
-    const categoryData = Object.keys(result).map(category => ({
-        name: category,
-        sum: result[category]
-    }))
-    return categoryData
+    });
+
+    return resultArray
 }
-
-

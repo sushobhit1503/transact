@@ -2,12 +2,16 @@ import React from "react";
 import StatCards from "../Components/StatCards";
 import "./Dashboard.css"
 import Cards from "../Components/Cards";
+import CanvasJSReact from '@canvasjs/react-charts';
 import SettingsBar from "../Components/SettingsBar";
-import { baseUrl } from "../index";
-import axios from "axios";
-import { calculateCreditCardInfo, calculateOverallExpense, calculateOverallRevenue, calculateOverallLent, calculateOverallCategoryShare, calculateOverallPaymentShare } from "../DashboardUtils";
+import { calculateCreditCardInfo, calculateOverallCategoryShare, calculateOverallPaymentShare } from "../Utils/DashboardUtils";
 import randomColor from "randomcolor";
 import { getPaymentByCredit } from "../Backend/paymentCalls";
+import { calculateAccountOverview } from "../AccountUtils.js"
+import { creditTranscWithoutTransfer, debitTranscLent, debitTranscWithoutTransfer } from "../Utils/commonUtils";
+import AccountCards from "../Components/AccountCards";
+
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class Dashboard extends React.Component {
     constructor() {
@@ -19,6 +23,7 @@ class Dashboard extends React.Component {
             paymentShareData: [],
             categoryShareData: [],
             creditCardInfo: [],
+            accountInfo: [],
             color1: "",
             color2: "",
             color3: "",
@@ -26,24 +31,57 @@ class Dashboard extends React.Component {
         }
     }
     componentDidMount() {
-        axios.get(`${baseUrl}/transaction/all`).then(result => {
-            const totalExpense = calculateOverallExpense(result.data)
-            const totalRevenue = calculateOverallRevenue(result.data)
-            const totalLent = calculateOverallLent(result.data)
-            axios.get(`${baseUrl}/payment`).then(result1 => {
-                const paymentShareData = calculateOverallPaymentShare(result.data, result1.data)
-                this.setState({ paymentShareData })
-            })
-            const categoryShareData = calculateOverallCategoryShare(result.data)
-            getPaymentByCredit().then(allPayments => {
-                const creditCardInfo = calculateCreditCardInfo(allPayments, result.data)
-                this.setState({ totalExpense, totalLent, totalRevenue, categoryShareData, creditCardInfo }, () => {
-                })
-            })
+        const allTransc = JSON.parse(localStorage.getItem("transc"))
+        const allPayments = JSON.parse(localStorage.getItem("payments"))
+        const allAccount = JSON.parse(localStorage.getItem("accounts"))
+        const totalExpense = debitTranscWithoutTransfer(allTransc).totalRevenue
+        const totalRevenue = creditTranscWithoutTransfer(allTransc).totalRevenue
+        const totalLent = debitTranscLent(allTransc).totalRevenue
+        const paymentShareData = calculateOverallPaymentShare(allTransc, allPayments)
+        const categoryShareData = calculateOverallCategoryShare(allTransc)
+        const accountInfo = calculateAccountOverview (allAccount, allTransc)
+        getPaymentByCredit().then(allPayments => {
+            const creditCardInfo = calculateCreditCardInfo(allPayments, allTransc)
+            this.setState({ totalExpense, totalLent, totalRevenue, categoryShareData, creditCardInfo, paymentShareData, accountInfo })
         })
         this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor() })
     }
     render() {
+        const optionsPayment = {
+			animationEnabled: true,
+			exportEnabled: true,
+			theme: "dark2",
+			axisY: {
+				includeZero: true
+			},
+			data: [{
+				type: "column",
+				indexLabelFontColor: "#5A5757",
+				indexLabelPlacement: "outside",
+                axisX: {
+                    valueFormatString: ""
+                },
+				dataPoints: this.state.paymentShareData
+			}]
+		}
+
+        const optionsCategory = {
+			animationEnabled: true,
+			exportEnabled: true,
+			theme: "dark2",
+			axisY: {
+				includeZero: true
+			},
+			data: [{
+				type: "column",
+				indexLabelFontColor: "#5A5757",
+				indexLabelPlacement: "outside",
+                axisX: {
+                    valueFormatString: ""
+                },
+				dataPoints: this.state.categoryShareData
+			}]
+		}
         return (
             <div>
                 <SettingsBar />
@@ -55,40 +93,25 @@ class Dashboard extends React.Component {
                 </div>
                 <div className="row row-cols-1 row-cols-xl-2 g-3">
                     <Cards data={this.state.creditCardInfo} />
-                    <div className="col">
-                        <div className="row row-cols-1 row-cols-xl-2 g-3">
-                            <div className="col">
-                                <div className="graph-card">
-                                    <div className="card-title"> Account 1 </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="graph-card">
-                                    <div className="card-title"> Account 2 </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="graph-card">
-                                    <div className="card-title"> Account 3 </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="graph-card">
-                                    <div className="card-title"> Account 4 </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <AccountCards data={this.state.accountInfo} />
                 </div>
                 <div className="row row-cols-1 row-cols-xl-2 g-3">
                     <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Payment Method Share </div>
+                            <div>
+                                <CanvasJSChart options={optionsPayment}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="col">
                         <div className="graph-card">
                             <div className="card-title"> Category Share </div>
+                            <div>
+                                <CanvasJSChart options={optionsCategory}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

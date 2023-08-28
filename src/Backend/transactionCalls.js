@@ -6,6 +6,11 @@ export const getAllTransc = async () => {
     return result.data
 }
 
+export const getEachTransc = async (transc_uid) => {
+    const result = await axios.get (`${baseUrl}/transaction/${transc_uid}`)
+    return result.data
+}
+
 export const getTranscByAccount = async (account_uid) => {
     const result = await axios.get (`${baseUrl}/transaction/account/${account_uid}`)
     return result.data
