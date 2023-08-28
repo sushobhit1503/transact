@@ -23,6 +23,14 @@ public class TransactionController {
         return transactionRepository.findAll();
     }
 
+    @CrossOrigin 
+    @GetMapping ("/transaction/{transc_id}")
+    public Transaction getTransaction (@PathVariable String transc_id) {
+        Query query = new Query ();
+        query.addCriteria(Criteria.where("_id").is(transc_id));
+        return mongoTemplate.findOne(query, Transaction.class);
+    }
+
     @CrossOrigin
     @GetMapping ("/transaction/account/{account_uid}")
     public List <Transaction> getTransactionsByAccount (@PathVariable String account_uid) {

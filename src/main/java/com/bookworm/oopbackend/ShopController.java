@@ -31,6 +31,26 @@ public class ShopController {
         return mongoTemplate.findOne(query, Shop.class);
     }
 
+    @CrossOrigin
+    @PutMapping("/shop/name/{uid}/{name}")
+    public Shop changeShopName (@PathVariable String uid, @PathVariable String name) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(uid));
+        Shop shop = mongoTemplate.findOne(query, Shop.class);
+        shop.setName(name);
+        return shopsRepository.save(shop);
+    }
+
+    @CrossOrigin
+    @PutMapping("/shop/city/{uid}/{city}")
+    public Shop changeCityName (@PathVariable String uid, @PathVariable String city) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(uid));
+        Shop shop = mongoTemplate.findOne(query, Shop.class);
+        shop.setCity(city);
+        return shopsRepository.save(shop);
+    }
+
     @CrossOrigin 
     @DeleteMapping("/shop/{shop_uid}")
     public Shop deleteShop (@PathVariable String shop_uid) {
