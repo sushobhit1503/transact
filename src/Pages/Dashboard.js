@@ -8,7 +8,7 @@ import { calculateCreditCardInfo, calculateOverallCategoryShare, calculateOveral
 import randomColor from "randomcolor";
 import { getPaymentByCredit } from "../Backend/paymentCalls";
 import { calculateAccountOverview } from "../AccountUtils.js"
-import { creditTranscWithoutTransfer, debitTranscLent, debitTranscWithoutTransfer } from "../Utils/commonUtils";
+import { creditTransc, creditTranscTransfer, debitTranscLent, debitTransc, debitTranscCardPayments, debitTranscTransfer } from "../Utils/commonUtils";
 import AccountCards from "../Components/AccountCards";
 
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -20,6 +20,7 @@ class Dashboard extends React.Component {
             totalRevenue: 0,
             totalExpense: 0,
             totalLent: 0,
+            totalBalance: 0,
             paymentShareData: [],
             categoryShareData: [],
             creditCardInfo: [],
@@ -34,15 +35,16 @@ class Dashboard extends React.Component {
         const allTransc = JSON.parse(localStorage.getItem("transc"))
         const allPayments = JSON.parse(localStorage.getItem("payments"))
         const allAccount = JSON.parse(localStorage.getItem("accounts"))
-        const totalExpense = debitTranscWithoutTransfer(allTransc).totalRevenue
-        const totalRevenue = creditTranscWithoutTransfer(allTransc).totalRevenue
         const totalLent = debitTranscLent(allTransc).totalRevenue
+        const totalRevenue = creditTransc(allTransc).totalRevenue - creditTranscTransfer(allTransc).totalRevenue
+        const totalExpense = debitTransc(allTransc).totalRevenue - debitTranscLent(allTransc).totalRevenue - debitTranscCardPayments(allTransc).totalExpense - debitTranscTransfer(allTransc).totalRevenue
+        const totalBalance = creditTransc(allTransc).totalRevenue - debitTransc(allTransc).totalRevenue + debitTranscCardPayments(allTransc).totalExpense
         const paymentShareData = calculateOverallPaymentShare(allTransc, allPayments)
         const categoryShareData = calculateOverallCategoryShare(allTransc)
         const accountInfo = calculateAccountOverview (allAccount, allTransc)
         getPaymentByCredit().then(allPayments => {
             const creditCardInfo = calculateCreditCardInfo(allPayments, allTransc)
-            this.setState({ totalExpense, totalLent, totalRevenue, categoryShareData, creditCardInfo, paymentShareData, accountInfo })
+            this.setState({ totalExpense, totalBalance, totalLent, totalRevenue, categoryShareData, creditCardInfo, paymentShareData, accountInfo })
         })
         this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor() })
     }
@@ -86,8 +88,8 @@ class Dashboard extends React.Component {
             <div>
                 <SettingsBar />
                 <div className="row row-cols-1 row-cols-xl-4 row-cols-md-2 g-3">
-                    <StatCards backgroundColor={this.state.color1} text="TOTAL BALANCE" amount={`Rs. ${this.state.totalRevenue - this.state.totalExpense}`} />
-                    <StatCards backgroundColor={this.state.color2} text="TOTAL EXPENSE" amount={`Rs. ${this.state.totalExpense - this.state.totalLent}`} />
+                    <StatCards backgroundColor={this.state.color1} text="TOTAL BALANCE" amount={`Rs. ${this.state.totalBalance}`} />
+                    <StatCards backgroundColor={this.state.color2} text="TOTAL EXPENSE" amount={`Rs. ${this.state.totalExpense}`} />
                     <StatCards backgroundColor={this.state.color3} text="TOTAL REVENUE" amount={`Rs. ${this.state.totalRevenue}`} />
                     <StatCards backgroundColor={this.state.color4} text="TOTAL LENT" amount={`Rs. ${this.state.totalLent}`} />
                 </div>

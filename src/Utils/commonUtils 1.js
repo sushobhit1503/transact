@@ -11,6 +11,19 @@ export const creditTransc = (allTransactions) => {
     return {totalRevenue, totalCredit}
 }
 
+export const debitTranscWithoutTransfer = (allTransactions) => {
+    var totalRevenue = 0
+    var totalDebit = 0
+    allTransactions.map (eachTransaction => {
+        if (!eachTransaction.credit && eachTransaction.category !== "Transfer") {
+            totalRevenue += eachTransaction.amount
+            totalDebit += 1
+        }
+    })
+
+    return {totalRevenue, totalDebit}
+}
+
 export const creditTranscTransfer = (allTransactions) => {
     var totalRevenue = 0
     var totalCredit = 0
@@ -24,30 +37,17 @@ export const creditTranscTransfer = (allTransactions) => {
     return {totalRevenue, totalCredit}
 }
 
-export const debitTranscLent = (allTransactions) => {
-    var totalRevenue = 0
-    var totalLent = 0
-    allTransactions.map (eachTransaction => {
-        if (eachTransaction.lent) {
-            totalRevenue += eachTransaction.amount
-            totalLent += 1   
-        }
-    })
-
-    return {totalRevenue, totalLent}
-}
-
-export const debitTransc = (allTransactions) => {
-    var totalRevenue = 0
+export const debitTranscTransfer = (allTransactions) => {
+    var totalExpense = 0
     var totalDebit = 0
     allTransactions.map (eachTransaction => {
-        if (!eachTransaction.credit) {
-            totalRevenue += eachTransaction.amount
+        if (!eachTransaction.credit && eachTransaction.category === "Transfer") {
+            totalExpense += eachTransaction.amount
             totalDebit += 1
         }
     })
 
-    return {totalRevenue, totalDebit}
+    return {totalExpense, totalDebit}
 }
 
 export const debitTranscCardPayments = (allTransactions) => {
@@ -63,15 +63,15 @@ export const debitTranscCardPayments = (allTransactions) => {
     return {totalExpense, totalDebit}
 }
 
-export const debitTranscTransfer = (allTransactions) => {
+export const debitTranscLent = (allTransactions) => {
     var totalRevenue = 0
-    var totalDebit = 0
+    var totalLent = 0
     allTransactions.map (eachTransaction => {
-        if (!eachTransaction.credit && eachTransaction.category === "Transfer") {
+        if (eachTransaction.lent) {
             totalRevenue += eachTransaction.amount
-            totalDebit += 1
+            totalLent += 1   
         }
     })
 
-    return {totalRevenue, totalDebit}
+    return {totalRevenue, totalLent}
 }

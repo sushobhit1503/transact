@@ -11,7 +11,7 @@ import Add from '@material-ui/icons/Add';
 import Remove from '@material-ui/icons/Remove';
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import { changeTranscAmount, deleteTransaction, getEachTransc } from "../Backend/transactionCalls";
-import { creditTranscWithoutTransfer, debitTranscLent, debitTranscWithoutTransfer } from "../Utils/commonUtils";
+import {creditTransc, creditTranscTransfer, debitTransc, debitTranscCardPayments, debitTranscLent, debitTranscTransfer } from "../Utils/commonUtils";
 
 class Transactions extends React.Component {
     constructor() {
@@ -20,6 +20,7 @@ class Transactions extends React.Component {
             totalDebit: 0,
             totalCredit: 0,
             totalLent: 0,
+            totalTransaction: 0,
             allLentTransc: [],
             allTransc: [],
             oneTransaction: null,
@@ -36,12 +37,13 @@ class Transactions extends React.Component {
         const allPayment = JSON.parse(localStorage.getItem("payments"))
         const allLedger = JSON.parse(localStorage.getItem("ledgers"))
         const allAccounts = JSON.parse(localStorage.getItem("accounts"))
-        const totalCredit = creditTranscWithoutTransfer(allTranc).totalCredit
-        const totalDebit = debitTranscWithoutTransfer(allTranc).totalDebit
+        const totalCredit = creditTransc(allTranc).totalCredit - creditTranscTransfer(allTranc).totalCredit
+        const totalDebit = debitTransc(allTranc).totalDebit - debitTranscLent(allTranc).totalLent - debitTranscCardPayments(allTranc).totalDebit - debitTranscTransfer(allTranc).totalDebit
         const totalLent = debitTranscLent(allTranc).totalLent
+        const totalTransaction = totalCredit + totalDebit + totalLent
         const allLentTransc = calculateLentTransc(allTranc, allShops, allPayment)
         const allTransc = calculateAllTransc(allTranc, allShops, allAccounts, allLedger, allPayment)
-        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalCredit, totalDebit, totalLent, allLentTransc, allTransc })
+        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalCredit, totalDebit, totalLent, totalTransaction, allLentTransc, allTransc })
     }
     render() {
         const allTranscLentColumn = [
@@ -246,8 +248,8 @@ class Transactions extends React.Component {
             <div>
                 <SettingsBar />
                 <div className="row row-cols-1 row-cols-xl-4 row-cols-md-2 g-3">
-                    <StatCards backgroundColor={this.state.color1} text="TOTAL TRANSACTIONS" amount={this.state.totalCredit + this.state.totalDebit} />
-                    <StatCards backgroundColor={this.state.color2} text="TOTAL DEBIT TRANSACTIONS" amount={this.state.totalDebit - this.state.totalLent} />
+                    <StatCards backgroundColor={this.state.color1} text="TOTAL TRANSACTIONS" amount={this.state.totalTransaction} />
+                    <StatCards backgroundColor={this.state.color2} text="TOTAL DEBIT TRANSACTIONS" amount={this.state.totalDebit} />
                     <StatCards backgroundColor={this.state.color3} text="TOTAL CREDIT TRANSACTIONS" amount={this.state.totalCredit} />
                     <StatCards backgroundColor={this.state.color4} text="TOTAL LENT TRANSACTIONS" amount={this.state.totalLent} />
                 </div>
