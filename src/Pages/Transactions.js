@@ -304,6 +304,8 @@ class Transactions extends React.Component {
                                 <li>Use Self if the transaction is not a merchant transaction.</li>
                                 <li>If Lent transaction has another payment Method, transfer the received amount in the same payment method.</li>
                                 <li>The settlement value is the pending amount to be paid and not the received amount.</li>
+                                <li>For investment ledger, all the money which is invested should be in the investment ledger.</li>
+                                <li>Try to keep allocation to 0. Transfer money into trade account as per requirement.</li>
                             </ul>
                         </div>
                     </div>
