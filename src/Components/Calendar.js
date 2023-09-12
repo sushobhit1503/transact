@@ -59,7 +59,6 @@ export default class Calendar extends React.Component {
 function renderEventContent(eventInfo) {
     return (
         <div>
-            {console.log(eventInfo)}
             <b>EXPENSE: {eventInfo.event.title.split(",")[0]}</b><br />
             <i>REVENUE: {eventInfo.event.title.split(",")[1]}</i>
         </div>

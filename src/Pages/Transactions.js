@@ -11,7 +11,7 @@ import Add from '@material-ui/icons/Add';
 import Remove from '@material-ui/icons/Remove';
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import { changeTranscAmount, deleteTransaction, getEachTransc } from "../Backend/transactionCalls";
-import {creditTransc, creditTranscTransfer, debitTransc, debitTranscCardPayments, debitTranscLent, debitTranscTransfer } from "../Utils/commonUtils";
+import { creditTransc, creditTranscTransfer, debitTransc, debitTranscCardPayments, debitTranscLent, debitTranscTransfer } from "../Utils/commonUtils";
 
 class Transactions extends React.Component {
     constructor() {
@@ -264,7 +264,7 @@ class Transactions extends React.Component {
                     </div>
                 </div>
                 <div className="row row-cols-xl-2 row-cols-1 g-3">
-                    <div className="col">
+                    <div className="col-12 col-xl-4">
                         <div className="graph-card">
                             <div className="card-title"> Transaction Overview </div>
                             <div>
@@ -273,19 +273,20 @@ class Transactions extends React.Component {
                                 </div>}
                                 {this.state.oneTransaction && <div className="card-heading d-flex justify-content-between">
                                     {this.state.oneTransaction.itemName}
-                                    <div>
+                                    <button className="btn btn-danger card-subheading d-flex align-items-center">
+                                        Delete
                                         <DeleteIcon className="cursor" onClick={() => handleDeleteClick(this.state.oneTransaction.uid)} />
-                                    </div>
+                                    </button>
                                 </div>}
-                                {this.state.oneTransaction && <div className="card-subheading">
-                                    <div className="m-1">CATEGORY: {this.state.oneTransaction.category}</div>
-                                    <div className="m-1">DATE: {this.state.oneTransaction.date}</div>
-                                    <div className="m-1">AMOUT: {this.state.oneTransaction.amount}</div>
+                                {this.state.oneTransaction && <div className="text-color">
+                                    <div className="m-1"><span className="sub-heading">CATEGORY:</span> {this.state.oneTransaction.category}</div>
+                                    <div className="m-1"><span className="sub-heading">DATE:</span> {this.state.oneTransaction.date}</div>
+                                    <div className="m-1"><span className="sub-heading">AMOUNT:</span> {this.state.oneTransaction.amount}</div>
                                     <div className="m-1">
                                         <input onChange={onChange} value={this.state.settledAmount} style={{ width: "100px" }} placeholder="Rs. 0" />
                                     </div>
                                     <div className="mt-3">
-                                        <button className="btn btn-primary" onClick={() => handleEditClick(this.state.oneTransaction.uid)}>
+                                        <button className="btn btn-primary" onClick={() => handleCheckClick(this.state.oneTransaction.uid)}>
                                             Edit Amount
                                         </button>
                                     </div>
@@ -293,12 +294,19 @@ class Transactions extends React.Component {
                             </div>
                         </div>
                     </div>
-                    {/* <div className="col">
+                    <div className="col-12 col-xl-8">
                         <div className="graph-card">
-                            <div className="card-title"> Transaction Data Graphs </div>
-                            One controller to select the parameters and a button and then that graph will be displayed
+                            <div className="card-title"> SOME POINTS TO REMEMBER </div>
+                            <ul className="payment-overview-empty">
+                                <li>The correct figures are displayed on the overall ledger balance which includes lent amount also.</li>
+                                <li>Add the taxes paid on Credit Card in the transaction.</li>
+                                <li>Use General Store only if the store is one time use or unknown.</li>
+                                <li>Use Self if the transaction is not a merchant transaction.</li>
+                                <li>If Lent transaction has another payment Method, transfer the received amount in the same payment method.</li>
+                                <li>The settlement value is the pending amount to be paid and not the received amount.</li>
+                            </ul>
                         </div>
-                    </div> */}
+                    </div>
                 </div>
             </div>
         )

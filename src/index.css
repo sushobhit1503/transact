@@ -19,6 +19,10 @@ code {
     monospace;
 }
 
+.text-color {
+  color: var(--text-color);
+}
+
 .success-button {
   border: none;
   outline: none;

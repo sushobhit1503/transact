@@ -39,13 +39,13 @@ export const calculateAllLedgers = (allLedgers, allTransc) => {
         const {uid, name, active} = ledger
         const transcObjects = allTransc.filter (transc => transc.ledger === uid)
         const debit = transcObjects.reduce ((acc, transc) => {
-            if (!transc.credit && transc.category !== "Credit Card Payments") {
+            if (!transc.credit && transc.category !== "Credit Card Payments" && transc.category !== "Transfer") {
                 return acc + transc.amount
             }
             return acc
         }, 0)
         const credit = transcObjects.reduce ((acc, transc) => {
-            if (transc.credit) {
+            if (transc.credit && transc.category !== "Transfer") {
                 return acc + transc.amount
             }
             return acc

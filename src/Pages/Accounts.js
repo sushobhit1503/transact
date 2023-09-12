@@ -159,7 +159,7 @@ class Accounts extends React.Component {
                 const paymentData = calculateOverallPaymentShare(result, allPayments)
                 const categoryData = calculateOverallCategoryShare(result)
                 const calendarData = calculateCalendarData(result)
-                this.setState({ paymentData, categoryData, calendarData }, () => console.log(this.state.calendarData))
+                this.setState({ paymentData, categoryData, calendarData })
             })
         }
 
@@ -236,6 +236,10 @@ class Accounts extends React.Component {
                                 </div>
                             </div>
                             {this.state.selectedLedger[0] && <Table columns={allLedgerColumn} data={this.state.selectedLedger} title="All Ledgers" />}
+                            <div className="payment-overview-empty">
+                                NOTE: The debit amount includes money given on lent
+                            </div>
+
                         </div>
                     </div>
                 </div>

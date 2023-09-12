@@ -79,12 +79,14 @@ class SettingsBar extends React.Component {
 
         axios.get(`${baseUrl}/ledger/all`).then(result => {
             let ledgerOptions = []
+            console.log(result.data);
             result.data.map(eachLedgerData => {
                 let eachLedger = {
                     name: eachLedgerData.name,
                     value: eachLedgerData.uid
                 }
-                ledgerOptions.push(eachLedger)
+                if (eachLedgerData.active)
+                 ledgerOptions.push(eachLedger)
             })
             this.setState({ allLedgers: ledgerOptions })
         })
@@ -260,13 +262,13 @@ class SettingsBar extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="accountModal" tabindex="-1" role="dialog" aria-labelledby="accountModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="accountModalLabel">CREATE ACCOUNT</h5>
+                <div className="modal fade" id="accountModal" tabIndex="-1" role="dialog" aria-labelledby="accountModalLabel" aria-hidden="true">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="accountModalLabel">CREATE ACCOUNT</h5>
                             </div>
-                            <div class="modal-body">
+                            <div className="modal-body">
                                 <div className="row row-cols-1 g-3">
                                     <div className="col">
                                         <div className="settings-label">Bank Name:</div>
@@ -277,22 +279,23 @@ class SettingsBar extends React.Component {
                                         <SelectSearch onChange={(value) => { this.setState({ accountType: value }) }} value={this.state.accountType} search options={accountTypeOptions} name="accountType" placeholder="Select Account Type" />
                                     </div>
                                 </div>
+                                {this.state.bankName && this.state.accountType ? 
                                 <div className="d-flex justify-content-center">
                                     <button onClick={onCreateAccount} className="success-button">
                                         CREATE ACCOUNT
                                     </button>
-                                </div>
+                                </div>: null}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="ledgerModal" tabindex="-1" role="dialog" aria-labelledby="ledgerModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="accountModalLabel">CREATE LEDGER</h5>
+                <div className="modal fade" id="ledgerModal" tabIndex="-1" role="dialog" aria-labelledby="ledgerModalLabel" aria-hidden="true">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="accountModalLabel">CREATE LEDGER</h5>
                             </div>
-                            <div class="modal-body">
+                            <div className="modal-body">
                                 <div className="row row-cols-1 g-3">
                                     <div className="col">
                                         <div className="settings-label">Ledger Name:</div>
@@ -307,22 +310,23 @@ class SettingsBar extends React.Component {
                                         <SelectSearch onChange={(value) => { this.setState({ ledgerAccount: value }) }} search options={this.state.allAccounts} value={this.state.ledgerAccount} name="ledgerAccount" placeholder="Select Account" />
                                     </div>
                                 </div>
+                                {this.state.ledgerName && this.state.ledgerPurpose && this.state.ledgerAccount ? 
                                 <div className="d-flex justify-content-center">
                                     <button onClick={onLedgerCreate} className="success-button">
                                         CREATE LEDGER
                                     </button>
-                                </div>
+                                </div>: null}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="accountModalLabel">CREATE PAYMENT METHOD</h5>
+                <div className="modal fade" id="paymentModal" tabIndex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="accountModalLabel">CREATE PAYMENT METHOD</h5>
                             </div>
-                            <div class="modal-body">
+                            <div className="modal-body">
                                 <div className="row row-cols-1 g-3">
                                     <div className="col">
                                         <div className="settings-label">Payment Method Name:</div>
@@ -337,22 +341,23 @@ class SettingsBar extends React.Component {
                                         <Switch onChange={(value) => this.setState({ isCredit: value })} checked={this.state.isCredit} />
                                     </div>
                                 </div>
+                                {this.state.paymentName && this.state.selectedAccount ? 
                                 <div className="d-flex justify-content-center">
                                     <button onClick={onPaymentCreate} className="success-button">
                                         CREATE PAYMENT METHOD
                                     </button>
-                                </div>
+                                </div>: null}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="shopModal" tabindex="-1" role="dialog" aria-labelledby="shopModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="accountModalLabel">CREATE SHOP</h5>
+                <div className="modal fade" id="shopModal" tabIndex="-1" role="dialog" aria-labelledby="shopModalLabel" aria-hidden="true">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="accountModalLabel">CREATE SHOP</h5>
                             </div>
-                            <div class="modal-body">
+                            <div className="modal-body">
                                 <div className="row row-cols-1 g-3">
                                     <div className="col">
                                         <div className="settings-label">Shop Name:</div>
@@ -363,22 +368,23 @@ class SettingsBar extends React.Component {
                                         <SelectSearch onChange={(value) => { this.setState({ shopCity: value }) }} search options={shopCityOptions} value={this.state.shopCity} name="shopCity" placeholder="Select Shop Location" />
                                     </div>
                                 </div>
+                                {this.state.shopName && this.state.shopCity ? 
                                 <div className="d-flex justify-content-center">
                                     <button onClick={onShopCreate} className="success-button">
                                         CREATE SHOP
                                     </button>
-                                </div>
+                                </div>: null}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="transactModal" tabindex="-1" role="dialog" aria-labelledby="transactModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="accountModalLabel">CREATE TRANSACTION</h5>
+                <div className="modal fade" id="transactModal" tabIndex="-1" role="dialog" aria-labelledby="transactModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-lg" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="accountModalLabel">CREATE TRANSACTION</h5>
                             </div>
-                            <div class="modal-body">
+                            <div className="modal-body">
                                 <div className="row row-cols-xl-2 g-3 row-cols-1">
                                     <div className="col">
                                         <div className="settings-label">Item Name:</div>
@@ -426,11 +432,13 @@ class SettingsBar extends React.Component {
                                             <input onChange={onChange} value={this.state.creditPerson} name="creditPerson" placeholder="Enter the name of the person" />
                                         </div>}
                                 </div>
+                                {this.state.itemName && this.state.shopName && this.state.date && this.state.amount && this.state.paymentMethod && 
+                                this.state.category && this.state.selectedAccount && this.state.selectedLedger ? 
                                 <div className="d-flex justify-content-center">
                                     <button onClick={onTransactionCreate} style={{ marginTop: "0rem" }} className="success-button">
                                         CREATE TRANSACTION
                                     </button>
-                                </div>
+                                </div> : null}
                             </div>
                         </div>
                     </div>

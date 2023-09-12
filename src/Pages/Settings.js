@@ -5,14 +5,16 @@ import StatCards from "../Components/StatCards";
 import randomColor from "randomcolor";
 import Table from "../Components/Table";
 import { calculateShopOverview, cityWiseColumn, getCityWiseShop } from "../ShopUtils";
-import { deletePaymentMethod, getAllPaymentMethods, getEachPaymentMethod } from "../Backend/paymentCalls";
+import { deletePaymentMethod, getEachPaymentMethod } from "../Backend/paymentCalls";
 import { accountWiseColumn, calculatePaymentOverview, getAccountWisePayment } from "../PaymentUtils";
-import { getAllAccounts, getEachAccount } from "../Backend/accountCalls";
+import { getEachAccount } from "../Backend/accountCalls";
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Visibility from '@material-ui/icons/Visibility'
 import { deleteShop, editShopCity, editShopName, getEachShop } from "../Backend/shopCalls"
 import { getAllTransc } from "../Backend/transactionCalls";
+import SelectSearch from "react-select-search";
+import { shopCityOptions } from "../constants";
 
 class Settings extends React.Component {
     constructor() {
@@ -159,22 +161,18 @@ class Settings extends React.Component {
             })
         }
 
-        const onChangeCity = (event) => {
-            this.setState({ cityChange: event.target.value })
-        }
-
         const onChangeName = (event) => {
             this.setState({ nameChange: event.target.value })
         }
 
         const editShopDetails = (shopUid) => {
             if (this.state.cityChange !== "") {
-                editShopCity (shopUid, this.state.cityChange).then (() => {
+                editShopCity(shopUid, this.state.cityChange).then((result) => {
                     window.alert("Shop City Changed")
                 })
             }
             if (this.state.nameChange !== "") {
-                editShopName (shopUid, this.state.nameChange).then (() => {
+                editShopName(shopUid, this.state.nameChange).then(() => {
                     window.alert("Shop Name Changed")
                 })
             }
@@ -198,7 +196,7 @@ class Settings extends React.Component {
                     </div>
                     <div className="col">
                         <div className="shop-overview">
-                            <div style={{ alignItems: "flex-start" }} className="card-title"> Shop Overview
+                            <div className="card-title flex-start flex-wrap"> Shop Overview
                                 <div className="payment-heading">
                                     {this.state.selectedShop.name}
                                     {this.state.selectedShop.name &&
@@ -213,7 +211,7 @@ class Settings extends React.Component {
                                         Please select any shop to view its overview
                                     </div>}
                             </div>
-                            <div className="row row-cols-1 row-cols-xl-2">
+                            <div className="row row-cols-1 row-cols-xl-2 g-3">
                                 <div className="col">
                                     {this.state.selectedShop.name && <div className="payment-overview-stats">
                                         Rs. {this.state.selectedShopOverview.sum}
@@ -227,20 +225,22 @@ class Settings extends React.Component {
                                     </div>}
                                 </div>
                             </div>
-                            {this.state.selectedShop.name && 
-                            <div className="my-3">
-                                <input onChange={onChangeCity} value={this.state.cityChange} style={{ width: "200px" }} placeholder="Change City" />
-                            </div>}
-                            {this.state.selectedShop.name && 
-                            <div>
-                                <input onChange={onChangeName} value={this.state.nameChange} style={{ width: "200px" }} placeholder="Change Name" />
-                            </div>}
-                            {this.state.selectedShop.name && 
-                            <div className="mt-3">
-                                <button className="btn btn-primary" onClick={() => editShopDetails(this.state.selectedShop.uid)}>
-                                    EDIT SHOP
-                                </button>
-                            </div>}
+                            <div className="d-flex justify-content-center align-items-center flex-wrap">
+                                {this.state.selectedShop.name &&
+                                    <div className="my-3">
+                                        <SelectSearch onChange={(value) => { this.setState({ cityChange: value }) }} search options={shopCityOptions} value={this.state.cityChange} name="cityChange" placeholder="Select Shop Location" />
+                                    </div>}
+                                {this.state.selectedShop.name &&
+                                    <div className="my-3">
+                                        <input onChange={onChangeName} value={this.state.nameChange} style={{ width: "200px" }} placeholder="Change Name" />
+                                    </div>}
+                            </div>
+                            {this.state.selectedShop.name &&
+                                <div className="mt-3 d-flex justify-content-center">
+                                    <button className="btn btn-primary" onClick={() => editShopDetails(this.state.selectedShop.uid)}>
+                                        EDIT SHOP
+                                    </button>
+                                </div>}
                         </div>
                     </div>
                     <div className="col">
@@ -261,7 +261,7 @@ class Settings extends React.Component {
                     </div>
                     <div className="col">
                         <div className="shop-overview">
-                            <div style={{ alignItems: "flex-start" }} className="card-title"> Payment Overview
+                            <div className="card-title flex-start flex-wrap"> Payment Overview
                                 <div className="payment-heading">
                                     {this.state.selectedPayment.paymentMethodName}
                                     {this.state.selectedAccount.bankName &&

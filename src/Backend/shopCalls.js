@@ -17,12 +17,12 @@ export const getEachShop = async (shopUid) => {
 }
 
 export const editShopName = async (shopUid, name) => {
-    const result = await axios.get (`${baseUrl}/shop/${shopUid}/${name}`)
+    const result = await axios.put (`${baseUrl}/shop/name/${shopUid}/${name}`)
     return result.data
 }
 
 export const editShopCity = async (shopUid, city) => {
-    const result = await axios.get (`${baseUrl}/shop/${shopUid}/${city}`)
+    const result = await axios.put (`${baseUrl}/shop/city/${shopUid}/${city}`)
     return result.data
 }
 
