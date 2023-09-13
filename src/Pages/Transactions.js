@@ -11,7 +11,7 @@ import Add from '@material-ui/icons/Add';
 import Remove from '@material-ui/icons/Remove';
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import { changeTranscAmount, deleteTransaction, getEachTransc } from "../Backend/transactionCalls";
-import { creditTransc, creditTranscTransfer, debitTransc, debitTranscCardPayments, debitTranscLent, debitTranscTransfer } from "../Utils/commonUtils";
+import { creditTransc, creditTranscTransfer, debitTransc, debitTranscCardPayments, debitTranscLent, debitTranscTransfer, updateLocalStorage } from "../Utils/commonUtils";
 
 class Transactions extends React.Component {
     constructor() {
@@ -223,14 +223,17 @@ class Transactions extends React.Component {
         ];
 
         const handleCheckClick = (accountId) => {
-            changeTranscAmount(this.state.settledAmount, accountId).then(
+            changeTranscAmount(this.state.settledAmount, accountId).then(() => {
                 window.alert("Amount changed")
+                updateLocalStorage ()}
             )
         }
 
         const handleDeleteClick = (accountId) => {
-            deleteTransaction(accountId).then(
+            deleteTransaction(accountId).then(() => {
+                updateLocalStorage ()
                 window.alert("Transaction Deleted")
+            }
             )
         }
 

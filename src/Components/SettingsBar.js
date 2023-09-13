@@ -24,6 +24,7 @@ import { UilUniversity } from '@iconscout/react-unicons'
 import { UilChannel } from '@iconscout/react-unicons'
 import { UilExchange } from '@iconscout/react-unicons'
 import Box from '@mui/material/Box';
+import { updateLocalStorage } from "../Utils/commonUtils";
 
 class SettingsBar extends React.Component {
     constructor() {
@@ -79,7 +80,6 @@ class SettingsBar extends React.Component {
 
         axios.get(`${baseUrl}/ledger/all`).then(result => {
             let ledgerOptions = []
-            console.log(result.data);
             result.data.map(eachLedgerData => {
                 let eachLedger = {
                     name: eachLedgerData.name,
@@ -174,6 +174,7 @@ class SettingsBar extends React.Component {
             }
             createNewAccount(data).then(() => {
                 window.location.reload()
+                updateLocalStorage ()
             })
         }
         const onLedgerCreate = () => {
@@ -185,6 +186,7 @@ class SettingsBar extends React.Component {
             }
             axios.post(`${baseUrl}/ledger`, data).then(() => {
                 window.location.reload()
+                updateLocalStorage ()
             }).catch((err) => console.log(err.message))
         }
         const onShopCreate = () => {
@@ -194,6 +196,7 @@ class SettingsBar extends React.Component {
             }
             axios.post(`${baseUrl}/shops`, data).then(() => {
                 window.location.reload()
+                updateLocalStorage ()
             }).catch((err) => console.log(err.message))
         }
         const onPaymentCreate = () => {
@@ -204,6 +207,7 @@ class SettingsBar extends React.Component {
             }
             axios.post(`${baseUrl}/payment`, data).then(() => {
                 window.location.reload()
+                updateLocalStorage ()
             }).catch((err) => console.log(err.message))
         }
         const onTransactionCreate = () => {
@@ -222,6 +226,7 @@ class SettingsBar extends React.Component {
             }
             axios.post(`${baseUrl}/transaction`, data).then(() => {
                 window.location.reload()
+                updateLocalStorage ()
             }).catch((err) => console.log(err.message))
         }
         return (

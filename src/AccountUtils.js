@@ -30,7 +30,6 @@ export const calculateAccountOverview = (allAccounts, allTransc) => {
         const transcObjects = allTransc.filter(transc => transc.account === uid)
         const debit = transcObjects.reduce((acc, transc) => {
             if (transc.ledger === "6498404eeec5422176d76e67")
-            console.log(transc);
             if (!transc.credit && transc.category !== "Credit Card Payments" && transc.category !== "Transfer") {
                 return acc + transc.amount
             }
@@ -54,9 +53,6 @@ export const calculateAccountLedgers = (allTransc, allLedgers, accountId) => {
         const { uid, name } = ledger
         const transactions = allTransc.filter(transc => transc.ledger === uid)
         const debit = transactions.reduce((total, transc) => {
-            if (transc.ledger === "6498404eeec5422176d76e67") {
-                console.log(transc);
-            }
             return (!transc.credit && transc.category !== "Credit Card Payments" && transc.category !== "Transfer") ? total + transc.amount : total
         }, 0)
         const credit = transactions.reduce((total, transc) => {

@@ -1,6 +1,7 @@
 export const accountTypeOptions = [
     { name: 'Current', value: 'Current' },
-    { name: 'Savings', value: 'Savings' }
+    { name: 'Savings', value: 'Savings' },
+    { name: "Miscelleanous", value: "Miscellaneous" }
 ];
 
 export const shopCityOptions = [
@@ -11,23 +12,23 @@ export const shopCityOptions = [
 ];
 
 export const categoryOptions = [
-    {name: "Food", value: "Food"},
-    {name: "Travel", value: "Travel"},
-    {name: "Lifestyle", value: "Lifestyle"},
-    {name: "Outing", value: "Outing"},
-    {name: "Housing", value: "Housing"},
-    {name: "Medical", value: "Medical"},
-    {name: "Electronics", value: "Electronics"},
-    {name: "Stationary", value: "Stationary"},
-    {name: "Miscellaneous", value: "Miscellaneous"},
-    {name: "Subscriptions", value: "Subscriptions"},
-    {name: "Credit Card Payments", value: "Credit Card Payments"},
-    {name: "Transfer", value: "Transfer"},
-    {name: "Gifts", value: "Gifts"}
+    { name: "Food", value: "Food" },
+    { name: "Travel", value: "Travel" },
+    { name: "Lifestyle", value: "Lifestyle" },
+    { name: "Outing", value: "Outing" },
+    { name: "Housing", value: "Housing" },
+    { name: "Medical", value: "Medical" },
+    { name: "Electronics", value: "Electronics" },
+    { name: "Stationary", value: "Stationary" },
+    { name: "Miscellaneous", value: "Miscellaneous" },
+    { name: "Subscriptions", value: "Subscriptions" },
+    { name: "Credit Card Payments", value: "Credit Card Payments" },
+    { name: "Transfer", value: "Transfer" },
+    { name: "Gifts", value: "Gifts" }
 ]
 
 export const ledgerHistoryOptions = [
-    {name: "Payment Method", value: "Payment Method"},
-    {name: "Categories", value: "Category"},
-    {name: "Calendar", value: "Calendar"}
+    { name: "Payment Method", value: "Payment Method" },
+    { name: "Categories", value: "Category" },
+    { name: "Calendar", value: "Calendar" }
 ]

@@ -15,6 +15,7 @@ import { deleteShop, editShopCity, editShopName, getEachShop } from "../Backend/
 import { getAllTransc } from "../Backend/transactionCalls";
 import SelectSearch from "react-select-search";
 import { shopCityOptions } from "../constants";
+import { updateLocalStorage } from "../Utils/commonUtils";
 
 class Settings extends React.Component {
     constructor() {
@@ -168,11 +169,13 @@ class Settings extends React.Component {
         const editShopDetails = (shopUid) => {
             if (this.state.cityChange !== "") {
                 editShopCity(shopUid, this.state.cityChange).then((result) => {
+                    updateLocalStorage ()
                     window.alert("Shop City Changed")
                 })
             }
             if (this.state.nameChange !== "") {
                 editShopName(shopUid, this.state.nameChange).then(() => {
+                    updateLocalStorage ()
                     window.alert("Shop Name Changed")
                 })
             }
