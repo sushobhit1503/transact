@@ -3,7 +3,7 @@ import "./Accounts.css"
 import SettingsBar from "../Components/SettingsBar";
 import StatCards from "../Components/StatCards";
 import randomColor from "randomcolor";
-import { calculateCurrentAccounts, calculateSavingAccounts, calculateTotalBanks, calculateAccountOverview, calculateAccountLedgers, calculateLedgerAccountOverview, calculateCalendarData } from "../AccountUtils";
+import { calculateCurrentAccounts, calculateSavingAccounts, calculateMiscAccounts, calculateTotalBanks, calculateAccountOverview, calculateAccountLedgers, calculateLedgerAccountOverview, calculateCalendarData } from "../AccountUtils";
 import Table from "../Components/Table";
 import IconButton from '@material-ui/core/IconButton';
 import Visibility from '@material-ui/icons/Visibility';
@@ -23,6 +23,7 @@ class Accounts extends React.Component {
             totalCurrent: 0,
             totalSaving: 0,
             totalBanks: 0,
+            totalMisc: 0,
             allAccounts: [],
             selectedAccount: {},
             selectedLedger: [],
@@ -43,8 +44,9 @@ class Accounts extends React.Component {
         const totalCurrent = calculateCurrentAccounts(allAccount)
         const totalSaving = calculateSavingAccounts(allAccount)
         const totalBanks = calculateTotalBanks(allAccount)
+        const totalMisc = calculateMiscAccounts (allAccount)
         const allAccounts = calculateAccountOverview(allAccount, allTransc)
-        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalBanks, totalCurrent, totalSaving, allAccounts })
+        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalBanks, totalCurrent, totalMisc, totalSaving, allAccounts })
     }
     render() {
         const allAccountColumn = [
@@ -189,7 +191,7 @@ class Accounts extends React.Component {
             <div>
                 <SettingsBar />
                 <div className="row row-cols-1 row-cols-xl-4 row-cols-md-2 g-3">
-                    <StatCards backgroundColor={this.state.color1} text="TOTAL ACCOUNTS" amount={this.state.totalSaving + this.state.totalCurrent} />
+                    <StatCards backgroundColor={this.state.color1} text="TOTAL ACCOUNTS" amount={this.state.totalSaving + this.state.totalCurrent + this.state.totalMisc} />
                     <StatCards backgroundColor={this.state.color2} text="TOTAL SAVING ACCOUNTS" amount={this.state.totalSaving} />
                     <StatCards backgroundColor={this.state.color3} text="TOTAL CURRENT ACCOUNTS" amount={this.state.totalCurrent} />
                     <StatCards backgroundColor={this.state.color4} text="TOTAL BANKS" amount={this.state.totalBanks} />

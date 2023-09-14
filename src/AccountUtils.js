@@ -17,6 +17,16 @@ export const calculateSavingAccounts = (allAccounts) => {
 
 }
 
+export const calculateMiscAccounts = (allAccounts) => {
+    var totalMisc = 0
+    allAccounts.map(eachAccount => {
+        if (eachAccount.accountType === "Miscellaneous")
+            totalMisc += 1
+    })
+    return totalMisc
+
+}
+
 export const calculateTotalBanks = (allAccounts) => {
     return allAccounts.reduce((count, eachAccount) => {
         count.add(eachAccount["bankName"])
