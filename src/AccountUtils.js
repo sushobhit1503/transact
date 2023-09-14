@@ -29,7 +29,6 @@ export const calculateAccountOverview = (allAccounts, allTransc) => {
         const { uid, bankName, accountType } = account
         const transcObjects = allTransc.filter(transc => transc.account === uid)
         const debit = transcObjects.reduce((acc, transc) => {
-            if (transc.ledger === "6498404eeec5422176d76e67")
             if (!transc.credit && transc.category !== "Credit Card Payments" && transc.category !== "Transfer") {
                 return acc + transc.amount
             }
