@@ -83,6 +83,11 @@ export const debitTranscTransfer = (allTransactions) => {
 }
 
 export const updateLocalStorage = () => {
+    localStorage.removeItem("account")
+    localStorage.removeItem("payments")
+    localStorage.removeItem("ledgers")
+    localStorage.removeItem("shops")
+    localStorage.removeItem("transc")
     getAllAccounts().then(allAccounts => {
         localStorage.setItem("accounts", JSON.stringify(allAccounts))
     })

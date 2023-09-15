@@ -276,9 +276,9 @@ class Transactions extends React.Component {
                                 </div>}
                                 {this.state.oneTransaction && <div className="card-heading d-flex justify-content-between">
                                     {this.state.oneTransaction.itemName}
-                                    <button className="btn btn-danger card-subheading d-flex align-items-center">
+                                    <button onClick={() => handleDeleteClick(this.state.oneTransaction.uid)} className="btn btn-danger card-subheading d-flex align-items-center">
                                         Delete
-                                        <DeleteIcon className="cursor" onClick={() => handleDeleteClick(this.state.oneTransaction.uid)} />
+                                        <DeleteIcon className="cursor" />
                                     </button>
                                 </div>}
                                 {this.state.oneTransaction && <div className="text-color">

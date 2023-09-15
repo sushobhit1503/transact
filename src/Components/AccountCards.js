@@ -14,7 +14,7 @@ class AccountCards extends React.Component {
                     <Carousel style={{ height: "400px" }} interval={10000} autoPlay infiniteLoop showThumbs={false} showIndicators={false} showStatus={false}>
                         {this.props.data.map(eachCard => {
                             return (
-                                <div className="d-flex justify-content-around">
+                                <div className="d-flex justify-content-around flex-xl-row flex-column">
                                     <div>
                                         <img src={AccountImage} style={{ width: "325px" }} />
                                         <div className="card-heading">{eachCard.bankName} - {eachCard.accountType}</div>
