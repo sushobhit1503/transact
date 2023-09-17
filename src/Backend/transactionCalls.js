@@ -2,7 +2,7 @@ import axios from "axios"
 import { baseUrl } from "../index"
 
 export const getAllTransc = async () => {
-    const result = await axios.get (`${baseUrl}/transaction/all`)
+    const result = await axios.get (`${baseUrl}/transaction/transactions/all`)
     return result.data
 }
 

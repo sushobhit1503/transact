@@ -12,7 +12,7 @@ export const createNewAccount = async (accountData) => {
 }
 
 export const getAllAccounts = async () => {
-    const result = await axios.get (`${baseUrl}/account/all`)
+    const result = await axios.get (`${baseUrl}/account/accounts/all`)
     return result.data
 }
 

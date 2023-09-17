@@ -26,7 +26,7 @@ class Shop extends React.Component {
         }
     }
     componentDidMount() {
-        axios.get(`${baseUrl}/shops`).then(result => {
+        axios.get(`${baseUrl}/shop`).then(result => {
             this.setState({ totalShops: result.data.length, allShops: result.data, cityWiseShops: getCityWiseShop(result.data) })
         })
         this.setState({ color1: randomColor() })
