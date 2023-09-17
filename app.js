@@ -10,6 +10,13 @@ mongoose.connect('mongodb+srv://sushobhitsrivastava2017:Transact@cluster0.ckcsyt
 });
 
 app.use(bodyParser.json());
+app.use(function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 const shopRouter = require('./routes/shopRoutes');
 const transactionRouter = require('./routes/transactionRoutes');
@@ -24,7 +31,8 @@ app.use('/ledger', ledgerRouter);
 app.use('/payment', paymentRouter);
 
 // Start the Express server
-const port = process.env.PORT || 8001;
+const port = process.env.PORT || 8000;
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
