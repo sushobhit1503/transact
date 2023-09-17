@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Ledger = require('../models/Ledger'); 
 
-router.get('/all', async (req, res) => {
+router.get('ledgers/all', async (req, res) => {
   try {
     const ledgers = await Ledger.find();
     res.json(ledgers);

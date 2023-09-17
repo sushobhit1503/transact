@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET all accounts
-router.get('/all', async (req, res) => {
+router.get('accounts/all', async (req, res) => {
   try {
     const accounts = await Account.find();
     res.json(accounts);

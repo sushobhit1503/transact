@@ -4,7 +4,7 @@ const router = express.Router();
 const Transaction = require('../models/Transaction');
 
 // GET all transactions
-router.get('/all', async (req, res) => {
+router.get('transactions/all', async (req, res) => {
   try {
     const transactions = await Transaction.find();
     res.json(transactions);
