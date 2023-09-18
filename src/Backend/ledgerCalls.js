@@ -12,7 +12,7 @@ export const createNewLedger = async (ledgerData) => {
 }
 
 export const getAllLedgers = async () => {
-    const result = await axios.get (`${baseUrl}/ledger/ledgers/all`)
+    const result = await axios.get (`${baseUrl}/ledger/all`)
     return result.data
 }
 
