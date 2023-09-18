@@ -2,12 +2,12 @@ import axios from "axios"
 import { baseUrl } from "../index"
 
 export const createNewShop = async (shopData) => {
-    const result = await axios.post(`${baseUrl}/shop`, shopData)
+    const result = await axios.post(`${baseUrl}/shops`, shopData)
     return result.status
 }
 
 export const getAllShops = async () => {
-    const result = await axios.get (`${baseUrl}/shop`)
+    const result = await axios.get (`${baseUrl}/shops`)
     return result.data
 }
 

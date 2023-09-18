@@ -66,7 +66,7 @@ class SettingsBar extends React.Component {
             name = "dashboard"
         this.setState({ activeMenu: name })
 
-        axios.get(`${baseUrl}/account/accounts/all`).then(result => {
+        axios.get(`${baseUrl}/account/all`).then(result => {
             let accountsOptions = []
             result.data.map(eachAccountData => {
                 let eachAccount = {
@@ -78,7 +78,7 @@ class SettingsBar extends React.Component {
             this.setState({ allAccounts: accountsOptions })
         })
 
-        axios.get(`${baseUrl}/ledger/ledgers/all`).then(result => {
+        axios.get(`${baseUrl}/ledger/all`).then(result => {
             let ledgerOptions = []
             result.data.map(eachLedgerData => {
                 let eachLedger = {
@@ -91,7 +91,7 @@ class SettingsBar extends React.Component {
             this.setState({ allLedgers: ledgerOptions })
         })
 
-        axios.get(`${baseUrl}/shop`).then(result => {
+        axios.get(`${baseUrl}/shops`).then(result => {
             let shopsOptions = []
             result.data.map(eachShopData => {
                 let eachShop = {
@@ -194,7 +194,7 @@ class SettingsBar extends React.Component {
                 name: this.state.shopName,
                 city: this.state.shopCity
             }
-            axios.post(`${baseUrl}/shop`, data).then(() => {
+            axios.post(`${baseUrl}/shops`, data).then(() => {
                 window.location.reload()
                 updateLocalStorage ()
             }).catch((err) => console.log(err.message))
