@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Ledger = require('../models/Ledger'); 
 
-router.get('ledgers/all', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const ledgers = await Ledger.find();
     res.json(ledgers);
@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
 
 router.get('/:uid', async (req, res) => {
   try {
-    const ledger = await Ledger.findOne({ uid: req.params.uid });
+    const ledger = await Ledger.findOne({ _id: req.params.uid });
     if (!ledger) {
       return res.status(404).json({ error: 'Ledger not found' });
     }

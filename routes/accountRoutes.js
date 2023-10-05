@@ -5,7 +5,7 @@ const Account = require('../models/Account');
 // GET account by ID
 router.get('/:account_uid', async (req, res) => {
   try {
-    const account = await Account.findOne({ uid: req.params.account_uid });
+    const account = await Account.findOne({ _id: req.params.account_uid });
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
     }
@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET all accounts
-router.get('accounts/all', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const accounts = await Account.find();
     res.json(accounts);
@@ -43,7 +43,7 @@ router.get('accounts/all', async (req, res) => {
 // DELETE account by ID
 router.delete('/:account_uid', async (req, res) => {
   try {
-    await Account.deleteOne({ uid: req.params.account_uid });
+    await Account.deleteOne({ _id: req.params.account_uid });
     res.json({ message: 'Account deleted successfully' });
   } catch (err) {
     console.error(err);

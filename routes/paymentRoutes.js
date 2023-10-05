@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
 // GET payment method by UID
 router.get('/:payment_uid', async (req, res) => {
   try {
-    const paymentMethod = await Payment.findOne({ uid: req.params.payment_uid });
+    const paymentMethod = await Payment.findOne({ _id: req.params.payment_uid });
     if (!paymentMethod) {
       return res.status(404).json({ error: 'Payment method not found' });
     }
@@ -42,7 +42,7 @@ router.get('/:payment_uid', async (req, res) => {
 });
 
 // GET payment methods by credit
-router.get('/credit', async (req, res) => {
+router.get('/credit/check', async (req, res) => {
   try {
     const paymentMethods = await Payment.find({ isCredit: true });
     res.json(paymentMethods);
@@ -55,7 +55,7 @@ router.get('/credit', async (req, res) => {
 // DELETE payment method by UID
 router.delete('/:payment_uid', async (req, res) => {
   try {
-    await Payment.deleteOne({ uid: req.params.payment_uid });
+    await Payment.deleteOne({ _id: req.params.payment_uid });
     res.json({ message: 'Payment method deleted successfully' });
   } catch (err) {
     console.error(err);

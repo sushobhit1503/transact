@@ -3,7 +3,7 @@ const router = express.Router();
 const Shop = require('../models/Shop'); // Import the Shop model
 
 // GET all shops
-router.get('shops/all', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const shops = await Shop.find();
     res.json(shops);
