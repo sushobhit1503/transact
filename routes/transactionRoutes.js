@@ -161,4 +161,17 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.delete('/:transc_uid', async (req, res) => {
+  try {
+    const transc = await Transaction.findByIdAndRemove(req.params.transc_uid);
+    if (!transc) {
+      return res.status(404).json({ error: 'Transaction not found' });
+    }
+    res.json(transc);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 module.exports = router;
