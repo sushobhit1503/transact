@@ -10,8 +10,13 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Add from '@material-ui/icons/Add';
 import Remove from '@material-ui/icons/Remove';
 import CheckCircle from "@material-ui/icons/CheckCircle";
-import { changeTranscAmount, deleteTransaction, getEachTransc } from "../Backend/transactionCalls";
-import { creditTransc, creditTranscTransfer, debitTransc, debitTranscCardPayments, debitTranscLent, debitTranscTransfer, updateLocalStorage } from "../Utils/commonUtils";
+import { changeTranscAmount, deleteTransaction, getAllTransc, getEachTransc } from "../Backend/transactionCalls";
+import { creditTransc, creditTranscTransfer, debitTransc, debitTranscCardPayments, debitTranscLent, debitTranscTransfer } from "../Utils/commonUtils";
+import { getAllShops } from "../Backend/shopCalls";
+import { getAllPaymentMethods } from "../Backend/paymentCalls";
+import { getAllAccounts } from "../Backend/accountCalls";
+import { getAllLedgers } from "../Backend/ledgerCalls";
+import Moment from "react-moment";
 
 class Transactions extends React.Component {
     constructor() {
@@ -32,18 +37,24 @@ class Transactions extends React.Component {
         }
     }
     componentDidMount() {
-        const allTranc = JSON.parse(localStorage.getItem("transc"))
-        const allShops = JSON.parse(localStorage.getItem("shops"))
-        const allPayment = JSON.parse(localStorage.getItem("payments"))
-        const allLedger = JSON.parse(localStorage.getItem("ledgers"))
-        const allAccounts = JSON.parse(localStorage.getItem("accounts"))
-        const totalCredit = creditTransc(allTranc).totalCredit - creditTranscTransfer(allTranc).totalCredit
-        const totalDebit = debitTransc(allTranc).totalDebit - debitTranscLent(allTranc).totalLent - debitTranscCardPayments(allTranc).totalDebit - debitTranscTransfer(allTranc).totalDebit
-        const totalLent = debitTranscLent(allTranc).totalLent
-        const totalTransaction = totalCredit + totalDebit + totalLent
-        const allLentTransc = calculateLentTransc(allTranc, allShops, allPayment)
-        const allTransc = calculateAllTransc(allTranc, allShops, allAccounts, allLedger, allPayment)
-        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalCredit, totalDebit, totalLent, totalTransaction, allLentTransc, allTransc })
+        getAllTransc().then(allTranc => {
+            const totalCredit = creditTransc(allTranc).totalCredit - creditTranscTransfer(allTranc).totalCredit
+            const totalDebit = debitTransc(allTranc).totalDebit - debitTranscLent(allTranc).totalLent - debitTranscCardPayments(allTranc).totalDebit - debitTranscTransfer(allTranc).totalDebit
+            const totalLent = debitTranscLent(allTranc).totalLent
+            const totalTransaction = totalCredit + totalDebit + totalLent
+            getAllShops().then(allShops => {
+                getAllPaymentMethods().then(allPayment => {
+                    const allLentTransc = calculateLentTransc(allTranc, allShops, allPayment)
+                    getAllAccounts().then(allAccounts => {
+                        getAllLedgers().then(allLedger => {
+
+                            const allTransc = calculateAllTransc(allTranc, allShops, allAccounts, allLedger, allPayment)
+                            this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalCredit, totalDebit, totalLent, totalTransaction, allLentTransc, allTransc })
+                        })
+                    })
+                })
+            })
+        })
     }
     render() {
         const allTranscLentColumn = [
@@ -88,7 +99,7 @@ class Transactions extends React.Component {
                 }
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "Settle",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -102,7 +113,7 @@ class Transactions extends React.Component {
                 }
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "Action",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -195,6 +206,16 @@ class Transactions extends React.Component {
                 options: {
                     filter: true,
                     sort: true,
+                    customBodyRender: (value, tableMeta, updateValue) => {
+                        const itemId = tableMeta.rowData[7]
+                        return (
+                            <div>
+                                <Moment format="DD/MM/YYYY">
+                                    {itemId}
+                                </Moment>
+                            </div>
+                        )
+                    }
                 }
             },
             {
@@ -206,7 +227,7 @@ class Transactions extends React.Component {
                 }
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "Edit",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -225,13 +246,11 @@ class Transactions extends React.Component {
         const handleCheckClick = (accountId) => {
             changeTranscAmount(this.state.settledAmount, accountId).then(() => {
                 window.alert("Amount changed")
-                updateLocalStorage ()}
-            )
+            })
         }
 
         const handleDeleteClick = (accountId) => {
             deleteTransaction(accountId).then(() => {
-                updateLocalStorage ()
                 window.alert("Transaction Deleted")
             }
             )
@@ -276,20 +295,23 @@ class Transactions extends React.Component {
                                 </div>}
                                 {this.state.oneTransaction && <div className="card-heading d-flex justify-content-between">
                                     {this.state.oneTransaction.itemName}
-                                    <button onClick={() => handleDeleteClick(this.state.oneTransaction.uid)} className="btn btn-danger card-subheading d-flex align-items-center">
+                                    <button onClick={() => handleDeleteClick(this.state.oneTransaction._id)} className="btn btn-danger card-subheading d-flex align-items-center">
                                         Delete
                                         <DeleteIcon className="cursor" />
                                     </button>
                                 </div>}
                                 {this.state.oneTransaction && <div className="text-color">
                                     <div className="m-1"><span className="sub-heading">CATEGORY:</span> {this.state.oneTransaction.category}</div>
-                                    <div className="m-1"><span className="sub-heading">DATE:</span> {this.state.oneTransaction.date}</div>
+                                    <div className="m-1"><span className="sub-heading">DATE:</span>
+                                        <Moment format="DD/MM/YYYY">
+                                            {this.state.oneTransaction.date}
+                                        </Moment> </div>
                                     <div className="m-1"><span className="sub-heading">AMOUNT:</span> {this.state.oneTransaction.amount}</div>
                                     <div className="m-1">
                                         <input onChange={onChange} value={this.state.settledAmount} style={{ width: "100px" }} placeholder="Rs. 0" />
                                     </div>
                                     <div className="mt-3">
-                                        <button className="btn btn-primary" onClick={() => handleCheckClick(this.state.oneTransaction.uid)}>
+                                        <button className="btn btn-primary" onClick={() => handleCheckClick(this.state.oneTransaction._id)}>
                                             Edit Amount
                                         </button>
                                     </div>

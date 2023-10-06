@@ -6,10 +6,12 @@ import CanvasJSReact from '@canvasjs/react-charts';
 import SettingsBar from "../Components/SettingsBar";
 import { calculateCreditCardInfo, calculateOverallCategoryShare, calculateOverallPaymentShare } from "../Utils/DashboardUtils";
 import randomColor from "randomcolor";
-import { getPaymentByCredit } from "../Backend/paymentCalls";
+import { getAllPaymentMethods, getPaymentByCredit } from "../Backend/paymentCalls";
 import { calculateAccountOverview } from "../AccountUtils.js"
 import { creditTransc, creditTranscTransfer, debitTranscLent, debitTransc, debitTranscCardPayments, debitTranscTransfer } from "../Utils/commonUtils";
 import AccountCards from "../Components/AccountCards";
+import { getAllTransc } from "../Backend/transactionCalls";
+import { getAllAccounts } from "../Backend/accountCalls";
 
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
@@ -32,18 +34,18 @@ class Dashboard extends React.Component {
         }
     }
     componentDidMount() {
-        const allTransc = JSON.parse(localStorage.getItem("transc"))
-        const allPayments = JSON.parse(localStorage.getItem("payments"))
+        const allTransc = JSON.parse(localStorage.getItem("transcs"))
+        const allPayment = JSON.parse(localStorage.getItem("payments"))
         const allAccount = JSON.parse(localStorage.getItem("accounts"))
         const totalLent = debitTranscLent(allTransc).totalRevenue
         const totalRevenue = creditTransc(allTransc).totalRevenue - creditTranscTransfer(allTransc).totalRevenue
         const totalExpense = debitTransc(allTransc).totalRevenue - debitTranscLent(allTransc).totalRevenue - debitTranscCardPayments(allTransc).totalExpense - debitTranscTransfer(allTransc).totalRevenue
         const totalBalance = creditTransc(allTransc).totalRevenue - debitTransc(allTransc).totalRevenue + debitTranscCardPayments(allTransc).totalExpense
-        const paymentShareData = calculateOverallPaymentShare(allTransc, allPayments)
+        const paymentShareData = calculateOverallPaymentShare(allTransc, allPayment)
         const categoryShareData = calculateOverallCategoryShare(allTransc)
         const accountInfo = calculateAccountOverview (allAccount, allTransc)
-        getPaymentByCredit().then(allPayments => {
-            const creditCardInfo = calculateCreditCardInfo(allPayments, allTransc)
+        getPaymentByCredit().then(allPayments1 => {
+            const creditCardInfo = calculateCreditCardInfo(allPayments1, allTransc)
             this.setState({ totalExpense, totalBalance, totalLent, totalRevenue, categoryShareData, creditCardInfo, paymentShareData, accountInfo })
         })
         this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor() })

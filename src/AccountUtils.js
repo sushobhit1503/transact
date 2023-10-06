@@ -36,8 +36,8 @@ export const calculateTotalBanks = (allAccounts) => {
 
 export const calculateAccountOverview = (allAccounts, allTransc) => {
     var calculateAccount = allAccounts.map(account => {
-        const { uid, bankName, accountType } = account
-        const transcObjects = allTransc.filter(transc => transc.account === uid)
+        const { _id, bankName, accountType } = account
+        const transcObjects = allTransc.filter(transc => transc.account === _id)
         const debit = transcObjects.reduce((acc, transc) => {
             if (!transc.credit && transc.category !== "Credit Card Payments" && transc.category !== "Transfer") {
                 return acc + transc.amount
@@ -51,7 +51,7 @@ export const calculateAccountOverview = (allAccounts, allTransc) => {
             return acc
         }, 0)
         const balance = credit - debit
-        return { bankName, accountType, debit, credit, balance, uid }
+        return { bankName, accountType, debit, credit, balance, _id }
     })
     return calculateAccount
 }
@@ -59,8 +59,8 @@ export const calculateAccountOverview = (allAccounts, allTransc) => {
 export const calculateAccountLedgers = (allTransc, allLedgers, accountId) => {
     const transformedLedgers = allLedgers.filter(ledger => ledger.account === accountId)
     const transformedData = transformedLedgers.map(ledger => {
-        const { uid, name } = ledger
-        const transactions = allTransc.filter(transc => transc.ledger === uid)
+        const { _id, name } = ledger
+        const transactions = allTransc.filter(transc => transc.ledger === _id)
         const debit = transactions.reduce((total, transc) => {
             return (!transc.credit && transc.category !== "Credit Card Payments" && transc.category !== "Transfer") ? total + transc.amount : total
         }, 0)
@@ -68,7 +68,7 @@ export const calculateAccountLedgers = (allTransc, allLedgers, accountId) => {
             return (transc.credit && transc.category !== "Transfer") ? total + transc.amount : total
         }, 0)
         const balance = credit - debit
-        return { uid, name, debit, credit, balance }
+        return { _id, name, debit, credit, balance }
     })
 
     return transformedData

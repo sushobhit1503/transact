@@ -47,7 +47,7 @@ class Payment extends React.Component {
                 },
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "View",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -62,7 +62,7 @@ class Payment extends React.Component {
                 }
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "Delete",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {

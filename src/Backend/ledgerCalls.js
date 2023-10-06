@@ -8,11 +8,11 @@ export const getEachLedger = async (ledger_id) => {
 
 export const createNewLedger = async (ledgerData) => {
     const result = await axios.post(`${baseUrl}/ledger`, ledgerData)
-    return result.data
+    return result.status
 }
 
 export const getAllLedgers = async () => {
-    const result = await axios.get (`${baseUrl}/ledger/all`)
+    const result = await axios.get (`${baseUrl}/ledger`)
     return result.data
 }
 
@@ -23,7 +23,7 @@ export const getLedgersByAccount = async (accountId) => {
 
 export const activateLedger = async (ledger_id) => {
     const result = await axios.put (`${baseUrl}/ledger/activate/${ledger_id}`)
-    return result.data
+    return result.status
 }
 
 export const deActivateLedger = async (ledger_id) => {

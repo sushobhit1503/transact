@@ -17,7 +17,7 @@ export const getEachPaymentMethod = async (paymentUid) => {
 }
 
 export const getPaymentByCredit = async () => {
-    const result = await axios.get (`${baseUrl}/payment/credit`)
+    const result = await axios.get (`${baseUrl}/payment/credit/check`)
     return result.data
 }
 

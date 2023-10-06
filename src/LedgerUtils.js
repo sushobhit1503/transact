@@ -19,8 +19,8 @@ export const calculateNonActiveLedgers = (allLedgers) => {
 
 export const calculateNegativeLedgers = (allLedgers, allTransc) => {
     const totalNegativeLedgers = allLedgers.reduce ((count, ledger) => {
-        const {uid} = ledger
-        const transcObjects = allTransc.filter(transc => transc.ledger === uid)
+        const {_id} = ledger
+        const transcObjects = allTransc.filter(transc => transc.ledger === _id)
         const sum = transcObjects.reduce ((acc, transc) => {
             if (transc.credit)
                 return acc + transc.amount
@@ -36,8 +36,8 @@ export const calculateNegativeLedgers = (allLedgers, allTransc) => {
 
 export const calculateAllLedgers = (allLedgers, allTransc) => {
     var calculateLedgers = allLedgers.map(ledger => {
-        const {uid, name, active} = ledger
-        const transcObjects = allTransc.filter (transc => transc.ledger === uid)
+        const {_id, name, active} = ledger
+        const transcObjects = allTransc.filter (transc => transc.ledger === _id)
         const debit = transcObjects.reduce ((acc, transc) => {
             if (!transc.credit && transc.category !== "Credit Card Payments" && transc.category !== "Transfer") {
                 return acc + transc.amount
@@ -51,7 +51,7 @@ export const calculateAllLedgers = (allLedgers, allTransc) => {
             return acc
         }, 0)
         const balance = credit - debit
-        return {name, debit, credit, balance, uid, active}
+        return {name, debit, credit, balance, _id, active}
     })
     return calculateLedgers
 }

@@ -8,11 +8,12 @@ import Table from "../Components/Table";
 import IconButton from '@material-ui/core/IconButton';
 import Visibility from '@material-ui/icons/Visibility';
 import CanvasJSReact from '@canvasjs/react-charts';
-import { getTranscByAccount } from "../Backend/transactionCalls";
-import { getEachAccount } from "../Backend/accountCalls";
+import { getAllTransc, getTranscByAccount } from "../Backend/transactionCalls";
+import { getAllAccounts, getEachAccount } from "../Backend/accountCalls";
 import { getAllLedgers, getLedgersByAccount } from "../Backend/ledgerCalls";
 import { calculateOverallCategoryShare, calculateOverallPaymentShare } from "../Utils/DashboardUtils";
 import Calendar from "../Components/Calendar";
+import { getAllPaymentMethods } from "../Backend/paymentCalls";
 
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
@@ -39,14 +40,16 @@ class Accounts extends React.Component {
         }
     }
     componentDidMount() {
-        var allAccount = JSON.parse(localStorage.getItem("accounts"))
-        var allTransc = JSON.parse(localStorage.getItem("transc"))
-        const totalCurrent = calculateCurrentAccounts(allAccount)
-        const totalSaving = calculateSavingAccounts(allAccount)
-        const totalBanks = calculateTotalBanks(allAccount)
-        const totalMisc = calculateMiscAccounts (allAccount)
-        const allAccounts = calculateAccountOverview(allAccount, allTransc)
-        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalBanks, totalCurrent, totalMisc, totalSaving, allAccounts })
+        getAllAccounts().then(allAccount => {
+            const totalCurrent = calculateCurrentAccounts(allAccount)
+            const totalSaving = calculateSavingAccounts(allAccount)
+            const totalBanks = calculateTotalBanks(allAccount)
+            const totalMisc = calculateMiscAccounts (allAccount)
+            getAllTransc().then(allTransc => {
+                const allAccounts = calculateAccountOverview(allAccount, allTransc)
+                this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalBanks, totalCurrent, totalMisc, totalSaving, allAccounts })
+            })
+        })
     }
     render() {
         const allAccountColumn = [
@@ -91,7 +94,7 @@ class Accounts extends React.Component {
                 },
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "View",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -143,7 +146,6 @@ class Accounts extends React.Component {
         ];
 
         const handleViewClick = (accountId) => {
-            var allPayments = JSON.parse(localStorage.getItem("payments"))
             getEachAccount(accountId).then(selectedAccount => {
                 this.setState({ selectedAccount })
             })
@@ -158,10 +160,12 @@ class Accounts extends React.Component {
                 this.setState({ selectedAccountOverview })
             })
             getTranscByAccount(accountId).then(result => {
-                const paymentData = calculateOverallPaymentShare(result, allPayments)
-                const categoryData = calculateOverallCategoryShare(result)
-                const calendarData = calculateCalendarData(result)
-                this.setState({ paymentData, categoryData, calendarData })
+                getAllPaymentMethods().then(allPayments => {
+                    const paymentData = calculateOverallPaymentShare(result, allPayments)
+                    const categoryData = calculateOverallCategoryShare(result)
+                    const calendarData = calculateCalendarData(result)
+                    this.setState({ paymentData, categoryData, calendarData })
+                })
             })
         }
 

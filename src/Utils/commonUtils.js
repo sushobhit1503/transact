@@ -1,9 +1,3 @@
-import { getAllAccounts } from '../Backend/accountCalls';
-import { getAllPaymentMethods } from '../Backend/paymentCalls';
-import { getAllLedgers } from '../Backend/ledgerCalls';
-import { getAllShops } from '../Backend/shopCalls';
-import { getAllTransc } from '../Backend/transactionCalls';
-
 export const creditTransc = (allTransactions) => {
     var totalRevenue = 0
     var totalCredit = 0
@@ -80,27 +74,4 @@ export const debitTranscTransfer = (allTransactions) => {
     })
 
     return { totalRevenue, totalDebit }
-}
-
-export const updateLocalStorage = () => {
-    localStorage.removeItem("account")
-    localStorage.removeItem("payments")
-    localStorage.removeItem("ledgers")
-    localStorage.removeItem("shops")
-    localStorage.removeItem("transc")
-    getAllAccounts().then(allAccounts => {
-        localStorage.setItem("accounts", JSON.stringify(allAccounts))
-    })
-    getAllPaymentMethods().then(allPayment => {
-        localStorage.setItem("payments", JSON.stringify(allPayment))
-    })
-    getAllLedgers().then(allLedgers => {
-        localStorage.setItem("ledgers", JSON.stringify(allLedgers))
-    })
-    getAllShops().then(allShops => {
-        localStorage.setItem("shops", JSON.stringify(allShops))
-    })
-    getAllTransc().then(allTransc => {
-        localStorage.setItem("transc", JSON.stringify(allTransc))
-    })
 }

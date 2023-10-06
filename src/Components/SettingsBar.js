@@ -2,29 +2,16 @@ import React from "react";
 import "./SettingsBar.css"
 import "./Sidebar.css"
 import SelectSearch from "react-select-search";
-import { UilChannelAdd } from '@iconscout/react-unicons'
-import { UilSetting } from '@iconscout/react-unicons'
-import { UilFilePlusAlt } from '@iconscout/react-unicons'
-import { UilFolderPlus } from '@iconscout/react-unicons'
-import { UilBars } from '@iconscout/react-unicons'
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import Button from '@mui/material/Button';
-import { UilStore } from '@iconscout/react-unicons'
-import { UilCreditCardSearch } from '@iconscout/react-unicons'
-import SkyLight from "react-skylight";
-import axios from "axios";
-import { baseUrl } from "../index"
+import { UilChannelAdd, UilSetting, UilFilePlusAlt, UilFolderPlus, UilBars, UilStore, UilCreditCardSearch, UilCreateDashboard, UilUniversity, UilChannel, UilExchange } from '@iconscout/react-unicons'
+import {SwipeableDrawer, Button, Box} from '@mui/material';
 import Switch from "react-switch"
 import { accountTypeOptions, shopCityOptions, categoryOptions } from "../constants";
-import { createNewAccount, getEachAccount } from "../Backend/accountCalls"
-import { getEachLedger } from "../Backend/ledgerCalls"
+import { createNewAccount, getAllAccounts } from "../Backend/accountCalls"
+import { createNewLedger, getAllLedgers } from "../Backend/ledgerCalls"
 import Logo from "../Assets/logo.png"
-import { UilCreateDashboard } from '@iconscout/react-unicons'
-import { UilUniversity } from '@iconscout/react-unicons'
-import { UilChannel } from '@iconscout/react-unicons'
-import { UilExchange } from '@iconscout/react-unicons'
-import Box from '@mui/material/Box';
-import { updateLocalStorage } from "../Utils/commonUtils";
+import { createNewShop, getAllShops } from "../Backend/shopCalls";
+import { createNewPaymentMethod, getAllPaymentMethods } from "../Backend/paymentCalls";
+import { createnewTransc } from "../Backend/transactionCalls";
 
 class SettingsBar extends React.Component {
     constructor() {
@@ -66,61 +53,57 @@ class SettingsBar extends React.Component {
             name = "dashboard"
         this.setState({ activeMenu: name })
 
-        axios.get(`${baseUrl}/account/all`).then(result => {
+        getAllAccounts().then(result => {
             let accountsOptions = []
-            result.data.map(eachAccountData => {
+            result.map(eachAccountData => {
                 let eachAccount = {
                     name: `${eachAccountData.bankName} - ${eachAccountData.accountType}`,
-                    value: eachAccountData.uid
+                    value: eachAccountData._id
                 }
                 accountsOptions.push(eachAccount)
             })
             this.setState({ allAccounts: accountsOptions })
         })
-
-        axios.get(`${baseUrl}/ledger/all`).then(result => {
+        getAllLedgers ().then (result => {
             let ledgerOptions = []
-            result.data.map(eachLedgerData => {
+            result.map(eachLedgerData => {
                 let eachLedger = {
                     name: eachLedgerData.name,
-                    value: eachLedgerData.uid
+                    value: eachLedgerData._id
                 }
                 if (eachLedgerData.active)
-                 ledgerOptions.push(eachLedger)
+                    ledgerOptions.push(eachLedger)
             })
             this.setState({ allLedgers: ledgerOptions })
         })
-
-        axios.get(`${baseUrl}/shops`).then(result => {
+        getAllShops ().then(result => {
             let shopsOptions = []
-            result.data.map(eachShopData => {
+            result.map(eachShopData => {
                 let eachShop = {
                     name: eachShopData.name,
-                    value: eachShopData.uid
+                    value: eachShopData._id
                 }
                 shopsOptions.push(eachShop)
             })
             this.setState({ allShops: shopsOptions })
         })
-
-        axios.get(`${baseUrl}/payment`).then(result => {
+        getAllPaymentMethods().then (result => {
             let paymentOptions = []
-            result.data.map(eachPaymentData => {
+            result.map(eachPaymentData => {
                 let eachPayment = {
                     name: eachPaymentData.paymentMethodName,
-                    value: eachPaymentData.uid
+                    value: eachPaymentData._id
                 }
                 paymentOptions.push(eachPayment)
             })
             this.setState({ allPayments: paymentOptions })
         })
-
-        getEachAccount(localStorage.getItem("account")).then(result => {
-            this.setState({ selectedAccountName: `${result.bankName} - ${result.accountType}` })
-        })
-        getEachLedger(localStorage.getItem("ledger")).then(result => {
-            this.setState({ selectedLedgerName: result.name })
-        })
+        // getEachAccount(localStorage.getItem("account")).then(result => {
+        //     this.setState({ selectedAccountName: `${result.bankName} - ${result.accountType}` })
+        // })
+        // getEachLedger(localStorage.getItem("ledger")).then(result => {
+        //     this.setState({ selectedLedgerName: result.name })
+        // })
 
     }
     render() {
@@ -174,7 +157,6 @@ class SettingsBar extends React.Component {
             }
             createNewAccount(data).then(() => {
                 window.location.reload()
-                updateLocalStorage ()
             })
         }
         const onLedgerCreate = () => {
@@ -184,20 +166,18 @@ class SettingsBar extends React.Component {
                 account: this.state.ledgerAccount,
                 active: true
             }
-            axios.post(`${baseUrl}/ledger`, data).then(() => {
+            createNewLedger(data).then(() => {
                 window.location.reload()
-                updateLocalStorage ()
-            }).catch((err) => console.log(err.message))
+            })
         }
         const onShopCreate = () => {
             const data = {
                 name: this.state.shopName,
                 city: this.state.shopCity
             }
-            axios.post(`${baseUrl}/shops`, data).then(() => {
+            createNewShop(data).then (() => {
                 window.location.reload()
-                updateLocalStorage ()
-            }).catch((err) => console.log(err.message))
+            })
         }
         const onPaymentCreate = () => {
             const data = {
@@ -205,10 +185,9 @@ class SettingsBar extends React.Component {
                 account: this.state.selectedAccount,
                 isCredit: this.state.isCredit
             }
-            axios.post(`${baseUrl}/payment`, data).then(() => {
+            createNewPaymentMethod(data).then (() => {
                 window.location.reload()
-                updateLocalStorage ()
-            }).catch((err) => console.log(err.message))
+            })
         }
         const onTransactionCreate = () => {
             const data = {
@@ -224,10 +203,9 @@ class SettingsBar extends React.Component {
                 lent: this.state.lent,
                 creditPerson: this.state.creditPerson
             }
-            axios.post(`${baseUrl}/transaction`, data).then(() => {
+            createnewTransc(data).then (() => {
                 window.location.reload()
-                updateLocalStorage ()
-            }).catch((err) => console.log(err.message))
+            })
         }
         return (
             <div>
@@ -284,12 +262,12 @@ class SettingsBar extends React.Component {
                                         <SelectSearch onChange={(value) => { this.setState({ accountType: value }) }} value={this.state.accountType} search options={accountTypeOptions} name="accountType" placeholder="Select Account Type" />
                                     </div>
                                 </div>
-                                {this.state.bankName && this.state.accountType ? 
-                                <div className="d-flex justify-content-center">
-                                    <button onClick={onCreateAccount} className="success-button">
-                                        CREATE ACCOUNT
-                                    </button>
-                                </div>: null}
+                                {this.state.bankName && this.state.accountType ?
+                                    <div className="d-flex justify-content-center">
+                                        <button onClick={onCreateAccount} className="success-button">
+                                            CREATE ACCOUNT
+                                        </button>
+                                    </div> : null}
                             </div>
                         </div>
                     </div>
@@ -315,12 +293,12 @@ class SettingsBar extends React.Component {
                                         <SelectSearch onChange={(value) => { this.setState({ ledgerAccount: value }) }} search options={this.state.allAccounts} value={this.state.ledgerAccount} name="ledgerAccount" placeholder="Select Account" />
                                     </div>
                                 </div>
-                                {this.state.ledgerName && this.state.ledgerPurpose && this.state.ledgerAccount ? 
-                                <div className="d-flex justify-content-center">
-                                    <button onClick={onLedgerCreate} className="success-button">
-                                        CREATE LEDGER
-                                    </button>
-                                </div>: null}
+                                {this.state.ledgerName && this.state.ledgerPurpose && this.state.ledgerAccount ?
+                                    <div className="d-flex justify-content-center">
+                                        <button onClick={onLedgerCreate} className="success-button">
+                                            CREATE LEDGER
+                                        </button>
+                                    </div> : null}
                             </div>
                         </div>
                     </div>
@@ -346,12 +324,12 @@ class SettingsBar extends React.Component {
                                         <Switch onChange={(value) => this.setState({ isCredit: value })} checked={this.state.isCredit} />
                                     </div>
                                 </div>
-                                {this.state.paymentName && this.state.selectedAccount ? 
-                                <div className="d-flex justify-content-center">
-                                    <button onClick={onPaymentCreate} className="success-button">
-                                        CREATE PAYMENT METHOD
-                                    </button>
-                                </div>: null}
+                                {this.state.paymentName && this.state.selectedAccount ?
+                                    <div className="d-flex justify-content-center">
+                                        <button onClick={onPaymentCreate} className="success-button">
+                                            CREATE PAYMENT METHOD
+                                        </button>
+                                    </div> : null}
                             </div>
                         </div>
                     </div>
@@ -373,12 +351,12 @@ class SettingsBar extends React.Component {
                                         <SelectSearch onChange={(value) => { this.setState({ shopCity: value }) }} search options={shopCityOptions} value={this.state.shopCity} name="shopCity" placeholder="Select Shop Location" />
                                     </div>
                                 </div>
-                                {this.state.shopName && this.state.shopCity ? 
-                                <div className="d-flex justify-content-center">
-                                    <button onClick={onShopCreate} className="success-button">
-                                        CREATE SHOP
-                                    </button>
-                                </div>: null}
+                                {this.state.shopName && this.state.shopCity ?
+                                    <div className="d-flex justify-content-center">
+                                        <button onClick={onShopCreate} className="success-button">
+                                            CREATE SHOP
+                                        </button>
+                                    </div> : null}
                             </div>
                         </div>
                     </div>
@@ -437,13 +415,13 @@ class SettingsBar extends React.Component {
                                             <input onChange={onChange} value={this.state.creditPerson} name="creditPerson" placeholder="Enter the name of the person" />
                                         </div>}
                                 </div>
-                                {this.state.itemName && this.state.shopName && this.state.date && this.state.amount && this.state.paymentMethod && 
-                                this.state.category && this.state.selectedAccount && this.state.selectedLedger ? 
-                                <div className="d-flex justify-content-center">
-                                    <button onClick={onTransactionCreate} style={{ marginTop: "0rem" }} className="success-button">
-                                        CREATE TRANSACTION
-                                    </button>
-                                </div> : null}
+                                {this.state.itemName && this.state.shopName && this.state.date && this.state.amount && this.state.paymentMethod &&
+                                    this.state.category && this.state.selectedAccount && this.state.selectedLedger ?
+                                    <div className="d-flex justify-content-center">
+                                        <button onClick={onTransactionCreate} style={{ marginTop: "0rem" }} className="success-button">
+                                            CREATE TRANSACTION
+                                        </button>
+                                    </div> : null}
                             </div>
                         </div>
                     </div>

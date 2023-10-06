@@ -10,11 +10,12 @@ import Cancel from "@material-ui/icons/Cancel"
 import Visibility from '@material-ui/icons/Visibility'
 import Table from "../Components/Table";
 import CanvasJSReact from '@canvasjs/react-charts';
-import { getEachLedger, deActivateLedger, activateLedger } from "../Backend/ledgerCalls";
+import { getEachLedger, deActivateLedger, activateLedger, getAllLedgers } from "../Backend/ledgerCalls";
 import { getEachAccount } from "../Backend/accountCalls";
-import { getTranscByLedger } from "../Backend/transactionCalls";
+import { getAllTransc, getTranscByLedger } from "../Backend/transactionCalls";
 import Calendar from "../Components/Calendar";
 import { calculateOverallCategoryShare, calculateOverallPaymentShare } from "../Utils/DashboardUtils";
+import { getAllPaymentMethods } from "../Backend/paymentCalls";
 
 
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -39,13 +40,15 @@ class Ledger extends React.Component {
         }
     }
     componentDidMount() {
-        const allLedger = JSON.parse(localStorage.getItem("ledgers"))
-        const allTransc = JSON.parse(localStorage.getItem("transc"))
-        const totalActive = calculateActiveLedgers(allLedger)
-        const totalNonActive = calculateNonActiveLedgers(allLedger)
-        const totalNegative = calculateNegativeLedgers(allLedger, allTransc)
-        const allLedgers = calculateAllLedgers(allLedger, allTransc)
-        this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalActive, totalNegative, totalNonActive, allLedgers })
+        getAllLedgers().then(allLedger => {
+            const totalActive = calculateActiveLedgers(allLedger)
+            const totalNonActive = calculateNonActiveLedgers(allLedger)
+            getAllTransc().then(allTransc => {
+                const totalNegative = calculateNegativeLedgers(allLedger, allTransc)
+                const allLedgers = calculateAllLedgers(allLedger, allTransc)
+                this.setState({ color1: randomColor(), color2: randomColor(), color3: randomColor(), color4: randomColor(), totalActive, totalNegative, totalNonActive, allLedgers })
+            })
+        })
     }
 
     render() {
@@ -98,7 +101,7 @@ class Ledger extends React.Component {
                 },
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "View",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -144,7 +147,6 @@ class Ledger extends React.Component {
         }
 
         const handleViewClick = (accountId) => {
-            var allPayments = JSON.parse(localStorage.getItem("payments"))
             getEachLedger(accountId).then(result => {
                 this.setState({ selectedLedger: result }, () => {
                     getEachAccount(result.account).then(result1 => {
@@ -153,10 +155,12 @@ class Ledger extends React.Component {
                 })
             })
             getTranscByLedger(accountId).then(result => {
-                const paymentData = calculateOverallPaymentShare (result, allPayments)
-                const categoryData = calculateOverallCategoryShare (result)
-                const calendarData = calculateCalendarLedger(result)
-                this.setState({ paymentData, calendarData, categoryData })
+                getAllPaymentMethods ().then (allPayments => {
+                    const paymentData = calculateOverallPaymentShare (result, allPayments)
+                    const categoryData = calculateOverallCategoryShare (result)
+                    const calendarData = calculateCalendarLedger(result)
+                    this.setState({ paymentData, calendarData, categoryData })
+                })
             })
         }
 

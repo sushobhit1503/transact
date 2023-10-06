@@ -16,20 +16,24 @@ import { getAllTransc } from './Backend/transactionCalls';
 
 class App extends React.Component {
   componentDidMount () {
-    getAllAccounts ().then (allAccounts => {
-      localStorage.setItem("accounts", JSON.stringify(allAccounts))
+    getAllAccounts().then (result => {
+      localStorage.setItem("accounts", JSON.stringify(result))
     })
-    getAllPaymentMethods().then (allPayment => {
-      localStorage.setItem("payments", JSON.stringify(allPayment))
+
+    getAllPaymentMethods().then (result => {
+      localStorage.setItem("payments", JSON.stringify(result))
     })
-    getAllLedgers ().then (allLedgers => {
-      localStorage.setItem("ledgers", JSON.stringify(allLedgers))
+
+    getAllLedgers().then (result => {
+      localStorage.setItem("ledgers", JSON.stringify(result))
     })
-    getAllShops ().then (allShops => {
-      localStorage.setItem("shops", JSON.stringify(allShops))
+
+    getAllShops().then (result => {
+      localStorage.setItem("shops", JSON.stringify(result))
     })
-    getAllTransc ().then (allTransc => {
-      localStorage.setItem("transc", JSON.stringify(allTransc))
+
+    getAllTransc().then (result => {
+      localStorage.setItem("transcs", JSON.stringify(result))
     })
   }
   render() {

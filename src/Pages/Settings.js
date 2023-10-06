@@ -5,17 +5,16 @@ import StatCards from "../Components/StatCards";
 import randomColor from "randomcolor";
 import Table from "../Components/Table";
 import { calculateShopOverview, cityWiseColumn, getCityWiseShop } from "../ShopUtils";
-import { deletePaymentMethod, getEachPaymentMethod } from "../Backend/paymentCalls";
+import { deletePaymentMethod, getAllPaymentMethods, getEachPaymentMethod } from "../Backend/paymentCalls";
 import { accountWiseColumn, calculatePaymentOverview, getAccountWisePayment } from "../PaymentUtils";
-import { getEachAccount } from "../Backend/accountCalls";
+import { getAllAccounts, getEachAccount } from "../Backend/accountCalls";
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Visibility from '@material-ui/icons/Visibility'
-import { deleteShop, editShopCity, editShopName, getEachShop } from "../Backend/shopCalls"
+import { deleteShop, editShopCity, editShopName, getAllShops, getEachShop } from "../Backend/shopCalls"
 import { getAllTransc } from "../Backend/transactionCalls";
 import SelectSearch from "react-select-search";
 import { shopCityOptions } from "../constants";
-import { updateLocalStorage } from "../Utils/commonUtils";
 
 class Settings extends React.Component {
     constructor() {
@@ -38,12 +37,15 @@ class Settings extends React.Component {
         }
     }
     componentDidMount() {
-        const allShops = JSON.parse(localStorage.getItem("shops"))
-        const allPayment = JSON.parse(localStorage.getItem("payments"))
-        const allAccount = JSON.parse(localStorage.getItem("accounts"))
-        this.setState({ totalShops: allShops.length, allShops, cityWiseShops: getCityWiseShop(allShops), allPayments: allPayment })
-        var accountWise = getAccountWisePayment(allPayment, allAccount)
-        this.setState({ color1: randomColor(), color2: randomColor(), accountWise })
+        getAllShops().then (allShops => {
+            getAllPaymentMethods().then(allPayment => {
+                getAllAccounts().then (allAccount => {
+                    this.setState({ totalShops: allShops.length, allShops, cityWiseShops: getCityWiseShop(allShops), allPayments: allPayment })
+                    var accountWise = getAccountWisePayment(allPayment, allAccount)
+                    this.setState({ color1: randomColor(), color2: randomColor(), accountWise })
+                })
+            })
+        })
     }
     render() {
         const allShopColumn = [
@@ -64,7 +66,7 @@ class Settings extends React.Component {
                 },
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "View",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -79,7 +81,7 @@ class Settings extends React.Component {
                 }
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "Delete",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -104,7 +106,7 @@ class Settings extends React.Component {
                 },
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "View",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -119,7 +121,7 @@ class Settings extends React.Component {
                 }
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "Delete",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -166,16 +168,14 @@ class Settings extends React.Component {
             this.setState({ nameChange: event.target.value })
         }
 
-        const editShopDetails = (shopUid) => {
+        const editShopDetails = (shop_id) => {
             if (this.state.cityChange !== "") {
-                editShopCity(shopUid, this.state.cityChange).then((result) => {
-                    updateLocalStorage ()
+                editShopCity(shop_id, this.state.cityChange).then((result) => {
                     window.alert("Shop City Changed")
                 })
             }
             if (this.state.nameChange !== "") {
-                editShopName(shopUid, this.state.nameChange).then(() => {
-                    updateLocalStorage ()
+                editShopName(shop_id, this.state.nameChange).then(() => {
                     window.alert("Shop Name Changed")
                 })
             }
@@ -240,7 +240,7 @@ class Settings extends React.Component {
                             </div>
                             {this.state.selectedShop.name &&
                                 <div className="mt-3 d-flex justify-content-center">
-                                    <button className="btn btn-primary" onClick={() => editShopDetails(this.state.selectedShop.uid)}>
+                                    <button className="btn btn-primary" onClick={() => editShopDetails(this.state.selectedShop._id)}>
                                         EDIT SHOP
                                     </button>
                                 </div>}

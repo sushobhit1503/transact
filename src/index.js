@@ -14,6 +14,6 @@ root.render(
 );
 
 export const baseUrlDev = `http://localhost:8000`
-export const baseUrlProd = `https://transact-personal.azurewebsites.net/`
+export const baseUrlProd = `https://transact-backend-node.onrender.com/`
 
 export const baseUrl = process.env.NODE_ENV === 'development' ? baseUrlDev : baseUrlProd

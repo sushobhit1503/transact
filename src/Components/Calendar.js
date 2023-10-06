@@ -2,7 +2,6 @@ import React from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import axios from 'axios'
 export default class Calendar extends React.Component {
     state = {
         isModalOpen: false,
@@ -37,16 +36,16 @@ export default class Calendar extends React.Component {
     /*
     Meet edit by default is true 
     */
-    handleEventClick = (clickInfo) => {
-        axios.get(`http://localhost:8000/api/meeting/${clickInfo.event.title}`).then(user => {
-            if (user.data.senderUid !== JSON.parse(localStorage.getItem("userDetails")).uid)
-                this.setState({ isEditable: false }) 
-            this.setState({ title: user.data.title, description: user.data.description, start: user.data.start, end: user.data.end, uid: user.data.uid })
-            this.setState({ isModalOpen: true })
-        }).catch(err => {
-            console.log(err.message);
-        })
-    }
+    // handleEventClick = (clickInfo) => {
+    //     axios.get(`http://localhost:8000/api/meeting/${clickInfo.event.title}`).then(user => {
+    //         if (user.data.senderUid !== JSON.parse(localStorage.getItem("userDetails")).uid)
+    //             this.setState({ isEditable: false }) 
+    //         this.setState({ title: user.data.title, description: user.data.description, start: user.data.start, end: user.data.end, uid: user.data.uid })
+    //         this.setState({ isModalOpen: true })
+    //     }).catch(err => {
+    //         console.log(err.message);
+    //     })
+    // }
 
     handleEvents = (events) => {
         this.setState({

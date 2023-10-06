@@ -3,13 +3,11 @@ import "./Shop.css"
 import SettingsBar from "../Components/SettingsBar";
 import StatCards from "../Components/StatCards";
 import randomColor from "randomcolor";
-import axios from "axios";
 import Table from "../Components/Table";
-import { baseUrl } from "../index";
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Visibility from '@material-ui/icons/Visibility'
-import {deleteShop, getEachShop} from "../Backend/shopCalls"
+import {deleteShop, getAllShops, getEachShop} from "../Backend/shopCalls"
 import { calculateShopOverview, cityWiseColumn, getCityWiseShop } from "../ShopUtils";
 import { getAllTransc } from "../Backend/transactionCalls";
 
@@ -26,7 +24,7 @@ class Shop extends React.Component {
         }
     }
     componentDidMount() {
-        axios.get(`${baseUrl}/shops`).then(result => {
+        getAllShops.then(result => {
             this.setState({ totalShops: result.data.length, allShops: result.data, cityWiseShops: getCityWiseShop(result.data) })
         })
         this.setState({ color1: randomColor() })
@@ -50,7 +48,7 @@ class Shop extends React.Component {
                 },
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "View",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {
@@ -65,7 +63,7 @@ class Shop extends React.Component {
                 }
             },
             {
-                name: "uid",
+                name: "_id",
                 label: "Delete",
                 options: {
                     customBodyRender: (value, tableMeta, updateValue) => {

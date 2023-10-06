@@ -1,5 +1,3 @@
-import { getEachAccount } from "./Backend/accountCalls";
-
 export const accountWiseColumn = [
     {
         name: "name",
@@ -21,8 +19,8 @@ export const accountWiseColumn = [
 
 export const getAccountWisePayment = (allPayments, allAccounts) => {
     const result = allAccounts.map(account => {
-        const {uid, bankName, accountType} = account
-        const totalCount = allPayments.filter(payment => payment.account === uid).length
+        const {_id, bankName, accountType} = account
+        const totalCount = allPayments.filter(payment => payment.account === _id).length
         const name = `${bankName} - ${accountType}`
         return {
             name, totalCount
