@@ -50,7 +50,7 @@ router.get('/ledger/:ledger_uid', async (req, res) => {
   }
 });
 
-router.get('/transaction/method/:account_uid/:method', async (req, res) => {
+router.get('/method/:account_uid/:method', async (req, res) => {
   const { account_uid, method } = req.params;
   try {
     const transactions = await Transaction.find({ account: account_uid, paymentMethod: method });
@@ -61,7 +61,7 @@ router.get('/transaction/method/:account_uid/:method', async (req, res) => {
   }
 });
 
-router.get('/transaction/method/ledger/:ledger_uid/:method', async (req, res) => {
+router.get('/method/ledger/:ledger_uid/:method', async (req, res) => {
   const { ledger_uid, method } = req.params;
   try {
     const transactions = await Transaction.find({ ledger: ledger_uid, paymentMethod: method });
@@ -72,7 +72,7 @@ router.get('/transaction/method/ledger/:ledger_uid/:method', async (req, res) =>
   }
 });
 
-router.get('/transaction/credited/:account_uid', async (req, res) => {
+router.get('/credited/:account_uid', async (req, res) => {
   const account_uid = req.params.account_uid;
   try {
     const transactions = await Transaction.find({ account: account_uid, isCredit: true });
@@ -83,7 +83,7 @@ router.get('/transaction/credited/:account_uid', async (req, res) => {
   }
 });
 
-router.get('/transaction/credited/ledger/:ledger_uid', async (req, res) => {
+router.get('/credited/ledger/:ledger_uid', async (req, res) => {
   const ledger_uid = req.params.ledger_uid;
   try {
     const transactions = await Transaction.find({ ledger: ledger_uid, isCredit: true });
@@ -94,7 +94,7 @@ router.get('/transaction/credited/ledger/:ledger_uid', async (req, res) => {
   }
 });
 
-router.get('/transaction/category/:category/:account_uid', async (req, res) => {
+router.get('/category/:category/:account_uid', async (req, res) => {
   const { category, account_uid } = req.params;
   try {
     const transactions = await Transaction.find({ account: account_uid, category: category });
@@ -105,7 +105,7 @@ router.get('/transaction/category/:category/:account_uid', async (req, res) => {
   }
 });
 
-router.get('/transaction/category/ledger/:category/:ledger_uid', async (req, res) => {
+router.get('/category/ledger/:category/:ledger_uid', async (req, res) => {
   const { category, ledger_uid } = req.params;
   try {
     const transactions = await Transaction.find({ ledger: ledger_uid, category: category });
@@ -116,7 +116,7 @@ router.get('/transaction/category/ledger/:category/:ledger_uid', async (req, res
   }
 });
 
-router.get('/transaction/date/:date/:account_uid', async (req, res) => {
+router.get('/date/:date/:account_uid', async (req, res) => {
   const { date, account_uid } = req.params;
   try {
     const transactions = await Transaction.find({ account: account_uid, date: date });
@@ -127,7 +127,7 @@ router.get('/transaction/date/:date/:account_uid', async (req, res) => {
   }
 });
 
-router.get('/transaction/date/ledger/:date/:ledger_uid', async (req, res) => {
+router.get('/date/ledger/:date/:ledger_uid', async (req, res) => {
   const { date, ledger_uid } = req.params;
   try {
     const transactions = await Transaction.find({ ledger: ledger_uid, date: date });
@@ -138,8 +138,8 @@ router.get('/transaction/date/ledger/:date/:ledger_uid', async (req, res) => {
   }
 });
 
-router.put('/transaction/amount/:uid/:amount', async (req, res) => {
-  const { uid, amount } = req.params;
+router.put('/amount/:_id/:amount', async (req, res) => {
+  const { _id, amount } = req.params;
   try {
     const transaction = await Transaction.findByIdAndUpdate(_id, { $set: { amount: amount } }, { new: true });
     res.json(transaction);
