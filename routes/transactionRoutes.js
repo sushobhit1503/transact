@@ -149,4 +149,16 @@ router.put('/amount/:_id/:amount', async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+  try {
+    const { itemName, shopName, amount, ledger, account, paymentMethod, date, category, credit, creditPerson, lent } = req.body;
+    const transaction = new Transaction({ itemName, shopName, amount, ledger, account, paymentMethod, date, category, credit, creditPerson, lent });
+    await transaction.save();
+    res.json(transaction);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 module.exports = router;
