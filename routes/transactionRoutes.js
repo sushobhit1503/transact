@@ -75,7 +75,7 @@ router.get('/method/ledger/:ledger_uid/:method', async (req, res) => {
 router.get('/credited/:account_uid', async (req, res) => {
   const account_uid = req.params.account_uid;
   try {
-    const transactions = await Transaction.find({ account: account_uid, isCredit: true });
+    const transactions = await Transaction.find({ account: account_uid, credit: true });
     res.json(transactions);
   } catch (err) {
     console.error(err);
@@ -86,7 +86,7 @@ router.get('/credited/:account_uid', async (req, res) => {
 router.get('/credited/ledger/:ledger_uid', async (req, res) => {
   const ledger_uid = req.params.ledger_uid;
   try {
-    const transactions = await Transaction.find({ ledger: ledger_uid, isCredit: true });
+    const transactions = await Transaction.find({ ledger: ledger_uid, credit: true });
     res.json(transactions);
   } catch (err) {
     console.error(err);

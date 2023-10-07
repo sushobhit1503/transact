@@ -54,7 +54,7 @@ router.get('/account/:uid', async (req, res) => {
 router.put('/activate/:uid', async (req, res) => {
   try {
     const ledger = await Ledger.findOneAndUpdate(
-      { uid: req.params.uid },
+      { _id: req.params.uid },
       { $set: { active: true } }
     );
     if (!ledger) {
@@ -71,7 +71,7 @@ router.put('/activate/:uid', async (req, res) => {
 router.put('/deactivate/:uid', async (req, res) => {
   try {
     const ledger = await Ledger.findOneAndUpdate(
-      { uid: req.params.uid },
+      { _id: req.params.uid },
       { $set: { active: false } }
     );
     if (!ledger) {
