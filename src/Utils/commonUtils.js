@@ -27,7 +27,7 @@ export const creditTranscTransfer = (allTransactions) => {
 export const debitTranscLent = (allTransactions) => {
     var totalRevenue = 0
     var totalLent = 0
-    allTransactions.map(eachTransaction => {
+    allTransactions?.map(eachTransaction => {
         if (eachTransaction.lent) {
             totalRevenue += eachTransaction.amount
             totalLent += 1
