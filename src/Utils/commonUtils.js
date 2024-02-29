@@ -2,7 +2,7 @@ export const creditTransc = (allTransactions) => {
     var totalRevenue = 0
     var totalCredit = 0
     allTransactions.map(eachTransaction => {
-        if (eachTransaction.credit) {
+        if (eachTransaction?.credit) {
             totalRevenue += eachTransaction.amount
             totalCredit += 1
         }

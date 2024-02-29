@@ -13,6 +13,8 @@ import { getAllPaymentMethods } from './Backend/paymentCalls';
 import { getAllLedgers } from './Backend/ledgerCalls';
 import { getAllShops } from './Backend/shopCalls';
 import { getAllTransc } from './Backend/transactionCalls';
+import PrivateRoute from './Components/PrivateRoute';
+import Authentication from './Pages/Authentication';
 
 class App extends React.Component {
   componentDidMount () {
@@ -40,13 +42,14 @@ class App extends React.Component {
     return (
       <div>
         <Routes>
-          <Route path="/" exact element={<Dashboard />} />
-          <Route path="/transaction" exact element={<Transactions />} />
-          <Route path="/account" exact element={<Accounts />} />
-          <Route path="/ledger" exact element={<Ledger />} />
-          <Route path="/shop" exact element={<Shop />} />
-          <Route path="/payment" exact element={<Payment />} />
-          <Route path="/settings" exact element={<Settings />} />
+          <Route path="/" exact element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/transaction" exact element={<PrivateRoute><Transactions /></PrivateRoute>} />
+          <Route path="/account" exact element={<PrivateRoute><Accounts /></PrivateRoute>} />
+          <Route path="/ledger" exact element={<PrivateRoute><Ledger /></PrivateRoute>} />
+          <Route path="/shop" exact element={<PrivateRoute><Shop /></PrivateRoute>} />
+          <Route path="/payment" exact element={<PrivateRoute><Payment /></PrivateRoute>} />
+          <Route path="/settings" exact element={<PrivateRoute><Settings /></PrivateRoute>} />
+          <Route path="/login" exact element={<Authentication />} />
         </Routes>
       </div>
     );

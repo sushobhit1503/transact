@@ -44,10 +44,7 @@ export const calculateOverallPaymentShare = (allTransactions, allPayments) => {
 }
 
 export const calculateCreditCardInfo = (allPayments, allTransc) => {
-  console.log(allPayments);
-  console.log(allTransc)
   const creditTransaction = allTransc.filter(transc => allPayments.find(method => method._id === transc.paymentMethod))
-  console.log(creditTransaction);
   const result = allPayments.filter(method => creditTransaction.some(transc => transc.paymentMethod === method._id)).map(method => {
     const filteredTransactions = creditTransaction.filter(transc => transc.paymentMethod === method._id)
     const totalAmount = filteredTransactions.reduce((acc, transc) => acc + transc.amount, 0)
