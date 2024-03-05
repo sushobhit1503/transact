@@ -12,7 +12,7 @@ class Cards extends React.Component {
                 <div className="card-panel">
                     <div className="card-title"> Card Details </div>
                     {cardDetails.length === 0 && <div className="card-heading">No credit card payment methods added</div>}
-                    <Carousel style={{ height: "400px" }} interval={10000} autoPlay infiniteLoop showThumbs={false} showIndicators={false} showStatus={false}>
+                    <Carousel style={{ height: "400px" }} interval={10000} infiniteLoop showThumbs={false} showIndicators={false} showStatus={false}>
                         {cardDetails.map(eachCard => {
                             return (
                                 <div>
