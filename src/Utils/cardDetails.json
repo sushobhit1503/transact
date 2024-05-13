@@ -43,16 +43,16 @@
     },
     {
         "name": "ICICI Credit Card",
-        "number": "",
-        "expiryDate": "",
-        "cvv": "",
-        "nameOnCard": ""
+        "number": "4035 6260 3556 4023",
+        "expiryDate": "02/31",
+        "cvv": "710",
+        "nameOnCard": "Sushobhit S"
     },
     {
         "name": "HDFC Debit Card",
-        "number": "",
-        "expiryDate": "",
-        "cvv": "",
-        "nameOnCard": ""
+        "number": "4059 8806 3683 4373",
+        "expiryDate": "02/31",
+        "cvv": "900",
+        "nameOnCard": "Sushobhit Srivastava"
     }
 ]
