@@ -2,12 +2,24 @@
 const express = require('express');
 const router = express.Router();
 const Payment = require('../models/Payment');
+const Cards = require("../models/Card")
 
 // GET all payment methods
 router.get('/', async (req, res) => {
   try {
     const paymentMethods = await Payment.find();
     res.json(paymentMethods);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// GET all cards
+router.get('/cards', async (req, res) => {
+  try {
+    const cards = await Cards.find();
+    res.json(cards);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
