@@ -25,3 +25,8 @@ export const deletePaymentMethod = async (paymentUid) => {
     const result = await axios.delete (`${baseUrl}/payment/${paymentUid}`)
     return result.status
 }
+
+export const allCardDetails = async () => {
+    const result = await axios.get (`${baseUrl}/payment/cards`)
+    return result.data
+}

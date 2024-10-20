@@ -3,20 +3,31 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "./Cards.css"
 import { Carousel } from 'react-responsive-carousel';
 import CardImage from "../Assets/CardImage.gif"
-import cardDetails from "../Utils/cardDetails.json"
+import { allCardDetails } from "../Backend/paymentCalls";
 
 class Cards extends React.Component {
+    constructor () {
+        super ()
+        this.state = {
+            allCards: []
+        }
+    }
+    componentDidMount () {
+        allCardDetails ().then (result => {
+            this.setState ({allCards: result})
+        })
+    }
     render() {
         return (
             <div className="col">
                 <div className="card-panel">
                     <div className="card-title"> Card Details </div>
-                    {cardDetails.length === 0 && <div className="card-heading">No credit card payment methods added</div>}
+                    {this.state.allCards.length === 0 && <div className="card-heading">No credit card payment methods added</div>}
                     <Carousel style={{ height: "400px" }} interval={10000} infiniteLoop showThumbs={false} showIndicators={false} showStatus={false}>
-                        {cardDetails.map(eachCard => {
+                        {this.state.allCards.map(eachCard => {
                             return (
                                 <div>
-                                    <img src={CardImage} style={{ width: "200px" }} />
+                                    <img src={CardImage} alt="card" style={{ width: "200px" }} />
                                     <div className="card-heading">{eachCard.name}</div>
                                     <div className="card-subheading">{eachCard.number}</div>
                                     <div className="card-subheading">{eachCard.nameOnCard}</div>
