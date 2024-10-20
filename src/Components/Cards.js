@@ -28,9 +28,9 @@ class Cards extends React.Component {
                             return (
                                 <div>
                                     <img src={CardImage} alt="card" style={{ width: "200px" }} />
-                                    <div className="card-heading">{eachCard.name}</div>
-                                    <div className="card-subheading">{eachCard.number}</div>
-                                    <div className="card-subheading">{eachCard.nameOnCard}</div>
+                                    <div className="card-heading">{eachCard.cardName}</div>
+                                    <div className="card-subheading">{eachCard.cardNumber}</div>
+                                    <div className="card-subheading">{eachCard.userName}</div>
                                     <div className="card-subheading">Expires on {eachCard.expiryDate}</div>
                                     <div className="card-subheading">{eachCard.cvv}</div>
                                 </div>
