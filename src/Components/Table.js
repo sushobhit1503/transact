@@ -4,8 +4,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
 
 const options = {
-    print: false,
-    download: false,
+    print: true,
+    download: true,
     selectableRowsHideCheckboxes: true,
     responsive: "standard",
     filterType: "dropdown",
